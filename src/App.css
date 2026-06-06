@@ -1,3 +1,143 @@
 .app {
-    background-color: #1030ad;
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, #14213d 0%, transparent 60%),
+    var(--bg);
+  display: flex;
+  justify-content: center;
+}
+
+/* Phone-shaped frame so it feels like an app on desktop, full-bleed on phone */
+.phone {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+@media (min-width: 480px) {
+  .phone {
+    min-height: 100vh;
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.6);
+  }
+}
+
+.screen {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 16px calc(96px + env(safe-area-inset-bottom, 0px));
+}
+
+/* Shared building blocks ------------------------------------------------ */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.section-title {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 22px 4px 10px;
+  font-weight: 700;
+}
+
+.btn {
+  border: none;
+  border-radius: 12px;
+  padding: 13px 16px;
+  font-weight: 700;
+  font-size: 15px;
+  color: #fff;
+  background: linear-gradient(135deg, #2f7bff, #6a4dff);
+  transition: transform 0.06s ease, opacity 0.15s ease;
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.btn.full {
+  width: 100%;
+}
+.btn.ghost {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.btn.danger {
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--muted);
+}
+.pill.win {
+  background: var(--green-soft);
+  color: var(--green);
+}
+.pill.loss {
+  background: var(--red-soft);
+  color: var(--red);
+}
+.pill.be {
+  background: var(--gold-soft);
+  color: var(--gold);
+}
+
+.empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 48px 20px;
+}
+.empty .big {
+  font-size: 46px;
+  margin-bottom: 8px;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.app-header .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.app-header .logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, var(--green), #0e9e6a);
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  box-shadow: 0 6px 16px rgba(22, 199, 132, 0.35);
+}
+.app-header h1 {
+  font-size: 19px;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.app-header .sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 1px;
 }

@@ -1,0 +1,92 @@
+.trade-card {
+  display: flex;
+  width: 100%;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  padding: 0;
+  transition: transform 0.06s ease, border-color 0.15s ease;
+}
+.trade-card:active {
+  transform: scale(0.99);
+  border-color: var(--faint);
+}
+.tc-accent {
+  width: 4px;
+  flex: 0 0 4px;
+  align-self: stretch;
+}
+.tc-accent.win {
+  background: var(--green);
+}
+.tc-accent.loss {
+  background: var(--red);
+}
+.tc-accent.be {
+  background: var(--gold);
+}
+.tc-main {
+  flex: 1;
+  padding: 13px 14px;
+}
+.tc-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.tc-symbol {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.tc-symbol .dir {
+  font-size: 12px;
+}
+.tc-symbol .dir.long {
+  color: var(--green);
+}
+.tc-symbol .dir.short {
+  color: var(--red);
+}
+.tc-symbol .sym {
+  font-weight: 800;
+  font-size: 16px;
+}
+.tc-symbol .mkt {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  background: var(--surface-2);
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+.tc-mid {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 8px 0 6px;
+}
+.tc-pnl {
+  font-size: 21px;
+  font-weight: 800;
+}
+.tc-rr {
+  font-size: 13px;
+  color: var(--muted);
+  background: var(--surface-2);
+  padding: 2px 8px;
+  border-radius: 7px;
+}
+.tc-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--muted);
+}
+.tc-date {
+  font-size: 11px;
+}

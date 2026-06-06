@@ -1,8 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
-import counterReducer from '../features/counterSlice';
+import tradesReducer, { persistTrades } from '../features/trades/tradesSlice';
 
 export const store = configureStore({
   reducer: {
-    counter: counterReducer,
+    trades: tradesReducer,
   },
+});
+
+// Keep trades in localStorage so the journal survives reloads and works
+// offline once installed to the home screen.
+store.subscribe(() => {
+  persistTrades(store.getState().trades.items);
 });
