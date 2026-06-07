@@ -1,0 +1,55 @@
+.bk-note {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text);
+}
+.bk-section {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.bk-title {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.bk-actions {
+  display: flex;
+  gap: 10px;
+}
+.bk-actions .btn {
+  flex: 1;
+}
+.bk-status {
+  border-radius: 11px;
+  padding: 11px 13px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.bk-status.ok {
+  background: var(--green-soft);
+  color: var(--green);
+}
+.bk-status.err {
+  background: var(--red-soft);
+  color: var(--red);
+}
+.bk-status.info {
+  background: var(--surface-2);
+  color: var(--muted);
+}
+.bk-hint {
+  font-size: 11px;
+  color: var(--faint);
+  line-height: 1.5;
+  margin: 2px 2px 0;
+}

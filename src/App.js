@@ -6,6 +6,7 @@ import Stats from './components/Stats';
 import TradeForm from './components/TradeForm';
 import BottomNav from './components/BottomNav';
 import PositionCalculator from './components/PositionCalculator';
+import BackupModal from './components/BackupModal';
 
 function App() {
   const [tab, setTab] = useState('dashboard');
@@ -13,6 +14,7 @@ function App() {
   const [prefill, setPrefill] = useState(null); // values from the calculator
   const [formOpen, setFormOpen] = useState(false);
   const [calcOpen, setCalcOpen] = useState(false);
+  const [backupOpen, setBackupOpen] = useState(false);
 
   const openNew = () => {
     setEditing(null);
@@ -44,7 +46,13 @@ function App() {
       <div className="phone">
         <main className="screen">
           <div className="screen-inner" key={tab}>
-            {tab === 'dashboard' && <Dashboard onAdd={openNew} goTab={setTab} />}
+            {tab === 'dashboard' && (
+              <Dashboard
+                onAdd={openNew}
+                goTab={setTab}
+                onBackup={() => setBackupOpen(true)}
+              />
+            )}
             {tab === 'journal' && <Journal onAdd={openNew} onEdit={openEdit} />}
             {tab === 'stats' && <Stats />}
           </div>
@@ -66,6 +74,7 @@ function App() {
             onLogTrade={logFromCalc}
           />
         )}
+        {backupOpen && <BackupModal onClose={() => setBackupOpen(false)} />}
       </div>
     </div>
   );

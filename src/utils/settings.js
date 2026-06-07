@@ -4,6 +4,8 @@ const KEY = 'tradekeeper:settings:v1';
 
 export const defaultSettings = {
   maxDailyLoss: 300, // $ — lockout warning once today's loss reaches this
+  backupUrl: '', // your Docker backup server, e.g. http://localhost:8080
+  backupToken: '', // optional shared secret (BACKUP_TOKEN on the server)
   checklist: [
     'Setup matches my trading plan',
     'Risk is within my max per trade',
