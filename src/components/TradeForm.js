@@ -4,6 +4,7 @@ import './TradeForm.css';
 import { addTrade, updateTrade, deleteTrade } from '../features/trades/tradesSlice';
 import { computeRR, fmtNum } from '../utils/format';
 import { xpForTrade } from '../utils/gamification';
+import { COMMON_TAGS } from '../utils/settings';
 
 const blank = {
   market: 'futures',
@@ -18,22 +19,27 @@ const blank = {
   pnl: '',
   confidence: 5,
   followedPlan: true,
+  tags: [],
   notes: '',
   date: new Date().toISOString().slice(0, 10),
 };
 
-export default function TradeForm({ trade, onClose }) {
+export default function TradeForm({ trade, prefill, onClose }) {
   const dispatch = useDispatch();
   const isEdit = Boolean(trade);
 
   const [form, setForm] = useState(() => {
-    if (!trade) return blank;
-    return {
-      ...blank,
-      ...trade,
-      date: (trade.date || new Date().toISOString()).slice(0, 10),
-    };
+    if (trade) {
+      return {
+        ...blank,
+        ...trade,
+        tags: trade.tags || [],
+        date: (trade.date || new Date().toISOString()).slice(0, 10),
+      };
+    }
+    return { ...blank, ...(prefill || {}), tags: (prefill && prefill.tags) || [] };
   });
+  const [tagDraft, setTagDraft] = useState('');
 
   const set = (key) => (e) => {
     const val =
@@ -41,9 +47,24 @@ export default function TradeForm({ trade, onClose }) {
     setForm((f) => ({ ...f, [key]: val }));
   };
 
+  const toggleTag = (tag) => {
+    const t = tag.trim();
+    if (!t) return;
+    setForm((f) => ({
+      ...f,
+      tags: f.tags.includes(t) ? f.tags.filter((x) => x !== t) : [...f.tags, t],
+    }));
+  };
+
+  const addDraftTag = () => {
+    if (tagDraft.trim()) {
+      toggleTag(tagDraft);
+      setTagDraft('');
+    }
+  };
+
   const rr = computeRR(form);
   const previewXp = xpForTrade(form);
-
   const numify = (v) => (v === '' || v == null ? '' : Number(v));
 
   const onSubmit = (e) => {
@@ -58,6 +79,7 @@ export default function TradeForm({ trade, onClose }) {
       lots: form.market === 'forex' ? numify(form.lots) : '',
       pnl: numify(form.pnl),
       confidence: Number(form.confidence),
+      tags: form.tags,
       date: new Date(form.date + 'T12:00:00').toISOString(),
     };
     if (isEdit) {
@@ -76,6 +98,8 @@ export default function TradeForm({ trade, onClose }) {
     }
   };
 
+  const tagOptions = [...new Set([...COMMON_TAGS, ...form.tags])];
+
   return (
     <div className="sheet-backdrop" onClick={onClose}>
       <div className="sheet" onClick={(e) => e.stopPropagation()}>
@@ -88,6 +112,10 @@ export default function TradeForm({ trade, onClose }) {
         </div>
 
         <form className="sheet-body" onSubmit={onSubmit}>
+          {prefill && !isEdit && (
+            <div className="prefill-note">🧮 Pre-filled from your calculator — add the result after the trade closes.</div>
+          )}
+
           {/* Market */}
           <div className="seg">
             {['futures', 'forex'].map((m) => (
@@ -256,8 +284,7 @@ export default function TradeForm({ trade, onClose }) {
           {/* Confidence */}
           <div className="field">
             <span>
-              Confidence{' '}
-              <b className="conf-val mono">{form.confidence}/10</b>
+              Confidence <b className="conf-val mono">{form.confidence}/10</b>
             </span>
             <input
               type="range"
@@ -284,6 +311,39 @@ export default function TradeForm({ trade, onClose }) {
               <i />
             </span>
           </button>
+
+          {/* Tags / setups */}
+          <div className="field">
+            <span>Setups / Tags</span>
+            <div className="tag-cloud">
+              {tagOptions.map((tag) => (
+                <button
+                  type="button"
+                  key={tag}
+                  className={`tag-chip ${form.tags.includes(tag) ? 'on' : ''}`}
+                  onClick={() => toggleTag(tag)}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+            <div className="tag-add">
+              <input
+                value={tagDraft}
+                onChange={(e) => setTagDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addDraftTag();
+                  }
+                }}
+                placeholder="Add custom tag…"
+              />
+              <button type="button" className="btn ghost" onClick={addDraftTag}>
+                Add
+              </button>
+            </div>
+          </div>
 
           {/* Date + notes */}
           <label className="field">

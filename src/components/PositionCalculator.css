@@ -115,3 +115,67 @@
   line-height: 1.5;
   margin: 12px 2px 0;
 }
+
+/* Pre-trade checklist */
+.checklist {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  padding: 12px;
+}
+.checklist-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.checklist-head .mono {
+  color: var(--muted);
+}
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--muted);
+  padding: 7px 2px;
+  font-size: 13px;
+}
+.check-row.on {
+  color: var(--text);
+}
+.check-row .box {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  border: 1.5px solid var(--border);
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  transition: all 0.15s ease;
+}
+.check-row .box.on {
+  background: var(--green);
+  border-color: var(--green);
+}
+.log-from-calc {
+  background: linear-gradient(135deg, var(--green), var(--green-2));
+}
+.log-from-calc:disabled {
+  opacity: 0.4;
+  filter: grayscale(0.5);
+}
+.checklist-warn {
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--gold);
+  margin-top: -6px;
+}

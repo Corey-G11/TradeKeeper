@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import './PositionCalculator.css';
 import { fmtMoney, fmtNum } from '../utils/format';
+import { loadSettings } from '../utils/settings';
 
 // $ per 1.00 point of price movement, per contract, for common futures.
 const FUTURES = {
@@ -40,8 +41,26 @@ const defaults = {
   pipSize: 0.0001,
 };
 
-export default function PositionCalculator({ onClose }) {
+export default function PositionCalculator({ onClose, onLogTrade }) {
   const [f, setF] = useState(() => ({ ...defaults, ...loadSaved() }));
+  const checklist = loadSettings().checklist;
+  const [checked, setChecked] = useState(() => checklist.map(() => false));
+  const allChecked = checked.every(Boolean);
+
+  const logTrade = () => {
+    if (!r.ready || !onLogTrade) return;
+    onLogTrade({
+      market: f.market,
+      direction: r.direction,
+      entry: Number(f.entry),
+      stopLoss: Number(f.stop),
+      profitTarget: Math.round(r.tp * 1e6) / 1e6,
+      contracts: f.market === 'futures' ? r.wholeSize : '',
+      lots: f.market === 'forex' ? r.wholeSize : '',
+      symbol:
+        f.market === 'futures' && f.instrument !== 'Custom' ? f.instrument : '',
+    });
+  };
 
   useEffect(() => {
     try {
@@ -327,6 +346,47 @@ export default function PositionCalculator({ onClose }) {
               </>
             )}
           </div>
+
+          {/* Pre-trade checklist */}
+          <div className="checklist">
+            <div className="checklist-head">
+              <span>✅ Pre-Trade Checklist</span>
+              <span className="mono">
+                {checked.filter(Boolean).length}/{checklist.length}
+              </span>
+            </div>
+            {checklist.map((item, i) => (
+              <button
+                type="button"
+                key={item}
+                className={`check-row ${checked[i] ? 'on' : ''}`}
+                onClick={() =>
+                  setChecked((c) => c.map((v, j) => (j === i ? !v : v)))
+                }
+              >
+                <span className={`box ${checked[i] ? 'on' : ''}`}>
+                  {checked[i] ? '✓' : ''}
+                </span>
+                <span>{item}</span>
+              </button>
+            ))}
+          </div>
+
+          {onLogTrade && (
+            <button
+              type="button"
+              className="btn full log-from-calc"
+              disabled={!r.ready}
+              onClick={logTrade}
+            >
+              Log this trade →
+            </button>
+          )}
+          {!allChecked && r.ready && (
+            <div className="checklist-warn">
+              Tip: tick every box before you take the trade.
+            </div>
+          )}
 
           <p className="calc-note">
             Sizes round down (futures) so you never exceed your planned risk.

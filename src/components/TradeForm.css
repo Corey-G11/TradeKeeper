@@ -278,3 +278,61 @@
   background: linear-gradient(135deg, var(--green), var(--green-2));
   margin-top: 2px;
 }
+
+.prefill-note {
+  background: rgba(52, 219, 232, 0.12);
+  border: 1px solid rgba(52, 219, 232, 0.3);
+  color: var(--cyan);
+  border-radius: 11px;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+/* Tag cloud */
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.tag-chip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+.tag-chip:active {
+  transform: scale(0.94);
+}
+.tag-chip.on {
+  background: var(--xp-soft);
+  border-color: rgba(141, 123, 255, 0.5);
+  color: var(--xp-2);
+}
+.tag-add {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.tag-add input {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  color: var(--text);
+  padding: 11px 12px;
+  font-size: 15px;
+  outline: none;
+}
+.tag-add input:focus {
+  border-color: var(--green);
+  box-shadow: var(--ring-focus);
+}
+.tag-add .btn {
+  padding: 11px 16px;
+  width: auto;
+}
