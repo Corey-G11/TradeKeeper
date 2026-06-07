@@ -162,6 +162,85 @@
   font-weight: 800;
 }
 
+/* Daily risk guardrail --------------------------------------------------- */
+.guardrail.locked {
+  border-color: rgba(255, 90, 110, 0.5);
+  box-shadow: 0 0 0 1px rgba(255, 90, 110, 0.25) inset, var(--shadow);
+}
+.gr-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.gr-label {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.gr-pnl {
+  font-size: 24px;
+  font-weight: 800;
+}
+.gr-limit {
+  text-align: right;
+}
+.gr-limit > span {
+  font-size: 11px;
+  color: var(--muted);
+}
+.gr-limit-input {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 4px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 6px 10px;
+}
+.gr-limit-input span {
+  color: var(--muted);
+  font-size: 14px;
+}
+.gr-limit-input input {
+  width: 64px;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 700;
+  text-align: right;
+  outline: none;
+  font-family: var(--mono);
+}
+.gr-lock {
+  color: var(--red);
+  font-weight: 600;
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+.gr-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+  margin: 12px 0 7px;
+}
+.gr-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--gold), var(--red));
+  transition: width 0.6s var(--ease);
+}
+.gr-fill.over {
+  background: var(--red);
+}
+.gr-foot {
+  font-size: 11px;
+  color: var(--muted);
+}
+
 /* Confidence ------------------------------------------------------------- */
 .conf-card {
   display: flex;

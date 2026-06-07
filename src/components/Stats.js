@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import './Stats.css';
 import { selectTrades } from '../features/trades/tradesSlice';
-import { tradeStats } from '../utils/stats';
+import { tradeStats, byTag, bySymbol, byWeekday } from '../utils/stats';
 import {
   totalXp,
   levelInfo,
@@ -19,6 +19,35 @@ const Stat = ({ label, value, cls }) => (
   </div>
 );
 
+const Breakdown = ({ rows, empty }) => {
+  if (!rows.length) return <div className="bd-empty">{empty}</div>;
+  const max = Math.max(...rows.map((r) => Math.abs(r.netPnl)), 1);
+  return (
+    <div className="card bd">
+      {rows.map((r) => (
+        <div key={r.key} className="bd-row">
+          <div className="bd-top">
+            <span className="bd-key">{r.key}</span>
+            <span className={`bd-pnl mono ${r.netPnl >= 0 ? 'pos' : 'neg'}`}>
+              {r.netPnl >= 0 ? '+' : ''}
+              {fmtMoney(r.netPnl)}
+            </span>
+          </div>
+          <div className="bd-bar">
+            <div
+              className={`bd-fill ${r.netPnl >= 0 ? 'pos' : 'neg'}`}
+              style={{ width: `${(Math.abs(r.netPnl) / max) * 100}%` }}
+            />
+          </div>
+          <div className="bd-sub">
+            {r.count} trade{r.count === 1 ? '' : 's'} · {fmtNum(r.winRate, 0)}% win
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 export default function Stats() {
   const trades = useSelector(selectTrades);
   const s = tradeStats(trades);
@@ -29,6 +58,9 @@ export default function Stats() {
 
   const winPct = s.winRate;
   const lossPct = s.wins + s.losses ? 100 - winPct : 0;
+  const tagRows = byTag(trades);
+  const symbolRows = bySymbol(trades);
+  const weekdayRows = byWeekday(trades);
 
   return (
     <div className="stats">
@@ -114,6 +146,18 @@ export default function Stats() {
           your winners — the goal is to size up on A+ setups and skip the rest.
         </p>
       </div>
+
+      <div className="section-title">By Setup</div>
+      <Breakdown
+        rows={tagRows}
+        empty="Tag your trades (in the trade form) to see which setups make you money."
+      />
+
+      <div className="section-title">By Symbol</div>
+      <Breakdown rows={symbolRows} empty="No trades yet." />
+
+      <div className="section-title">By Day of Week</div>
+      <Breakdown rows={weekdayRows} empty="No trades yet." />
 
       <div className="footer-note">TradeKeeper · stored locally on your device</div>
     </div>

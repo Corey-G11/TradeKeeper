@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import './Dashboard.css';
 import { selectTrades } from '../features/trades/tradesSlice';
-import { tradeStats, equityCurve } from '../utils/stats';
+import { tradeStats, equityCurve, todayPnl } from '../utils/stats';
+import { loadSettings, saveSettings } from '../utils/settings';
 import {
   totalXp,
   levelInfo,
@@ -40,6 +41,19 @@ export default function Dashboard({ onAdd, goTab }) {
   const wrC = useCountUp(stats.winRate);
   const cntC = useCountUp(stats.count);
   const progressPct = Math.round(lvl.progress * 100);
+
+  // Daily-loss guardrail
+  const [maxDailyLoss, setMaxDailyLoss] = useState(() => loadSettings().maxDailyLoss);
+  const tPnl = todayPnl(trades);
+  const lossUsed = tPnl < 0 ? Math.abs(tPnl) : 0;
+  const limit = Number(maxDailyLoss) || 0;
+  const lockedOut = limit > 0 && lossUsed >= limit;
+  const usedPct = limit > 0 ? Math.min(100, (lossUsed / limit) * 100) : 0;
+  const updateLimit = (v) => {
+    setMaxDailyLoss(v);
+    const s = loadSettings();
+    saveSettings({ ...s, maxDailyLoss: Number(v) || 0 });
+  };
 
   return (
     <div className="dashboard">
@@ -97,6 +111,50 @@ export default function Dashboard({ onAdd, goTab }) {
         <div className="kpi">
           <div className="kpi-label">Trades</div>
           <div className="kpi-val mono">{Math.round(cntC)}</div>
+        </div>
+      </div>
+
+      {/* Daily risk guardrail */}
+      <div className="section-title rise">🛑 Daily Risk Guardrail</div>
+      <div className={`card guardrail rise ${lockedOut ? 'locked' : ''}`}>
+        {lockedOut ? (
+          <div className="gr-lock">
+            🛑 Daily loss limit hit — step away. Protect the account; there's
+            always another setup tomorrow.
+          </div>
+        ) : (
+          <div className="gr-row">
+            <div>
+              <div className="gr-label">Today's P&amp;L</div>
+              <div className={`gr-pnl mono ${tPnl >= 0 ? 'pos' : 'neg'}`}>
+                {tPnl > 0 ? '+' : ''}
+                {fmtMoney(tPnl)}
+              </div>
+            </div>
+            <label className="gr-limit">
+              <span>Max daily loss</span>
+              <div className="gr-limit-input">
+                <span>$</span>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  value={maxDailyLoss}
+                  onChange={(e) => updateLimit(e.target.value)}
+                />
+              </div>
+            </label>
+          </div>
+        )}
+        <div className="gr-bar">
+          <div
+            className={`gr-fill ${lockedOut ? 'over' : ''}`}
+            style={{ width: `${usedPct}%` }}
+          />
+        </div>
+        <div className="gr-foot">
+          {limit > 0
+            ? `${fmtMoney(lossUsed)} of ${fmtMoney(limit)} risk used today`
+            : 'Set a daily max loss to enable the lockout warning'}
         </div>
       </div>
 
