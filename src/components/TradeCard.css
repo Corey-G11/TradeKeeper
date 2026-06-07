@@ -2,16 +2,18 @@
   display: flex;
   width: 100%;
   text-align: left;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--surface), var(--bg-2));
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius);
   overflow: hidden;
   padding: 0;
-  transition: transform 0.06s ease, border-color 0.15s ease;
+  box-shadow: var(--shadow);
+  transition: transform 0.1s var(--ease), border-color 0.18s ease;
+  animation: fadeUp 0.4s var(--ease) both;
 }
 .trade-card:active {
-  transform: scale(0.99);
-  border-color: var(--faint);
+  transform: scale(0.985);
+  border-color: var(--border);
 }
 .tc-accent {
   width: 4px;
@@ -19,17 +21,20 @@
   align-self: stretch;
 }
 .tc-accent.win {
-  background: var(--green);
+  background: linear-gradient(var(--green), var(--green-2));
+  box-shadow: 0 0 12px rgba(30, 217, 138, 0.5);
 }
 .tc-accent.loss {
-  background: var(--red);
+  background: linear-gradient(var(--red), #d63a4c);
+  box-shadow: 0 0 12px rgba(255, 90, 110, 0.4);
 }
 .tc-accent.be {
   background: var(--gold);
 }
 .tc-main {
   flex: 1;
-  padding: 13px 14px;
+  min-width: 0;
+  padding: 14px 15px;
 }
 .tc-top {
   display: flex;
@@ -40,9 +45,10 @@
   display: flex;
   align-items: center;
   gap: 7px;
+  min-width: 0;
 }
 .tc-symbol .dir {
-  font-size: 12px;
+  font-size: 11px;
 }
 .tc-symbol .dir.long {
   color: var(--green);
@@ -55,29 +61,31 @@
   font-size: 16px;
 }
 .tc-symbol .mkt {
-  font-size: 10px;
+  font-size: 9.5px;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   color: var(--muted);
   background: var(--surface-2);
   padding: 2px 7px;
   border-radius: 6px;
+  font-weight: 700;
 }
 .tc-mid {
   display: flex;
   align-items: baseline;
   gap: 10px;
-  margin: 8px 0 6px;
+  margin: 9px 0 7px;
 }
 .tc-pnl {
-  font-size: 21px;
+  font-size: 22px;
   font-weight: 800;
 }
 .tc-rr {
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 700;
   color: var(--muted);
   background: var(--surface-2);
-  padding: 2px 8px;
+  padding: 3px 9px;
   border-radius: 7px;
 }
 .tc-foot {
@@ -86,7 +94,14 @@
   align-items: center;
   font-size: 11px;
   color: var(--muted);
+  gap: 8px;
+}
+.tc-foot > span:first-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .tc-date {
   font-size: 11px;
+  white-space: nowrap;
 }

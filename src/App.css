@@ -1,13 +1,11 @@
 .app {
   min-height: 100vh;
-  background:
-    radial-gradient(1200px 600px at 50% -10%, #14213d 0%, transparent 60%),
-    var(--bg);
+  background: var(--bg);
   display: flex;
   justify-content: center;
 }
 
-/* Phone-shaped frame so it feels like an app on desktop, full-bleed on phone */
+/* Phone-shaped frame on desktop, full-bleed on phone */
 .phone {
   position: relative;
   width: 100%;
@@ -17,51 +15,80 @@
   flex-direction: column;
   background: var(--bg);
   overflow: hidden;
+  isolation: isolate;
+}
+
+/* Ambient aurora behind everything */
+.phone::before {
+  content: '';
+  position: absolute;
+  inset: -20% -30% auto -30%;
+  height: 70%;
+  background:
+    radial-gradient(60% 60% at 25% 10%, rgba(141, 123, 255, 0.22), transparent 70%),
+    radial-gradient(55% 55% at 90% 0%, rgba(30, 217, 138, 0.16), transparent 70%);
+  filter: blur(20px);
+  z-index: 0;
+  animation: drift 16s ease-in-out infinite;
+  pointer-events: none;
 }
 
 @media (min-width: 480px) {
   .phone {
     min-height: 100vh;
-    box-shadow: 0 0 60px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 80px rgba(0, 0, 0, 0.6);
   }
 }
 
 .screen {
   flex: 1;
+  position: relative;
+  z-index: 1;
   overflow-y: auto;
-  padding: 18px 16px calc(96px + env(safe-area-inset-bottom, 0px));
+  padding: 20px 16px calc(108px + env(safe-area-inset-bottom, 0px));
+}
+
+/* replays whenever the active tab changes (keyed in App.js) */
+.screen-inner {
+  animation: fadeUp 0.4s var(--ease) both;
 }
 
 /* Shared building blocks ------------------------------------------------ */
 
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--surface), var(--bg-2));
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius);
   padding: 16px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset, var(--shadow);
 }
 
 .section-title {
-  font-size: 13px;
-  letter-spacing: 0.08em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted);
-  margin: 22px 4px 10px;
+  margin: 24px 4px 12px;
   font-weight: 700;
 }
 
 .btn {
   border: none;
-  border-radius: 12px;
-  padding: 13px 16px;
+  border-radius: 13px;
+  padding: 14px 16px;
   font-weight: 700;
   font-size: 15px;
   color: #fff;
-  background: linear-gradient(135deg, #2f7bff, #6a4dff);
-  transition: transform 0.06s ease, opacity 0.15s ease;
+  background: linear-gradient(135deg, #3b82ff, #6a4dff);
+  box-shadow: 0 8px 20px rgba(76, 89, 255, 0.32);
+  transition: transform 0.08s var(--ease), filter 0.15s ease, opacity 0.15s ease;
 }
 .btn:active {
   transform: scale(0.97);
+  filter: brightness(1.08);
 }
 .btn.full {
   width: 100%;
@@ -70,19 +97,22 @@
   background: var(--surface-2);
   border: 1px solid var(--border);
   color: var(--text);
+  box-shadow: none;
 }
 .btn.danger {
   background: var(--red-soft);
   color: var(--red);
+  box-shadow: none;
 }
 
 .pill {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 4px 9px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  padding: 4px 10px;
   border-radius: 999px;
   background: var(--surface-2);
   color: var(--muted);
@@ -103,11 +133,18 @@
 .empty {
   text-align: center;
   color: var(--muted);
-  padding: 48px 20px;
+  padding: 56px 24px;
+  animation: fadeUp 0.5s var(--ease) both;
 }
 .empty .big {
-  font-size: 46px;
-  margin-bottom: 8px;
+  font-size: 52px;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4));
+}
+.empty p {
+  line-height: 1.5;
+  max-width: 280px;
+  margin: 0 auto 18px;
 }
 
 .app-header {
@@ -119,25 +156,25 @@
 .app-header .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 11px;
 }
 .app-header .logo {
-  width: 38px;
-  height: 38px;
-  border-radius: 11px;
-  background: linear-gradient(135deg, var(--green), #0e9e6a);
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: linear-gradient(135deg, var(--green), var(--green-2));
   display: grid;
   place-items: center;
-  font-size: 20px;
-  box-shadow: 0 6px 16px rgba(22, 199, 132, 0.35);
+  font-size: 22px;
+  box-shadow: 0 8px 20px rgba(30, 217, 138, 0.4);
 }
 .app-header h1 {
-  font-size: 19px;
+  font-size: 21px;
   margin: 0;
-  letter-spacing: -0.01em;
+  font-weight: 800;
 }
 .app-header .sub {
-  font-size: 12px;
+  font-size: 12.5px;
   color: var(--muted);
-  margin-top: 1px;
+  margin-top: 2px;
 }
