@@ -10,22 +10,33 @@ import PositionCalculator from './components/PositionCalculator';
 function App() {
   const [tab, setTab] = useState('dashboard');
   const [editing, setEditing] = useState(null); // trade being edited
+  const [prefill, setPrefill] = useState(null); // values from the calculator
   const [formOpen, setFormOpen] = useState(false);
   const [calcOpen, setCalcOpen] = useState(false);
 
   const openNew = () => {
     setEditing(null);
+    setPrefill(null);
     setFormOpen(true);
   };
 
   const openEdit = (trade) => {
     setEditing(trade);
+    setPrefill(null);
     setFormOpen(true);
   };
 
   const closeForm = () => {
     setFormOpen(false);
     setEditing(null);
+    setPrefill(null);
+  };
+
+  const logFromCalc = (data) => {
+    setCalcOpen(false);
+    setEditing(null);
+    setPrefill(data);
+    setFormOpen(true);
   };
 
   return (
@@ -46,8 +57,15 @@ function App() {
           onCalc={() => setCalcOpen(true)}
         />
 
-        {formOpen && <TradeForm trade={editing} onClose={closeForm} />}
-        {calcOpen && <PositionCalculator onClose={() => setCalcOpen(false)} />}
+        {formOpen && (
+          <TradeForm trade={editing} prefill={prefill} onClose={closeForm} />
+        )}
+        {calcOpen && (
+          <PositionCalculator
+            onClose={() => setCalcOpen(false)}
+            onLogTrade={logFromCalc}
+          />
+        )}
       </div>
     </div>
   );

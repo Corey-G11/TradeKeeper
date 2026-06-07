@@ -23,6 +23,7 @@ const seed = () => {
     confidence: 7,
     followedPlan: true,
     notes: '',
+    tags: [],
     ...over,
   });
   return [
@@ -39,6 +40,7 @@ const seed = () => {
       pnl: 240,
       confidence: 8,
       followedPlan: true,
+      tags: ['Breakout'],
       notes: 'Clean breakout over premarket high, waited for retest before entry.',
     }),
     mk({
@@ -54,6 +56,7 @@ const seed = () => {
       pnl: -150,
       confidence: 5,
       followedPlan: false,
+      tags: ['News'],
       notes: 'Chased the move, no confirmation. Stopped out. Lesson: wait for the setup.',
     }),
     mk({
@@ -69,6 +72,7 @@ const seed = () => {
       pnl: 600,
       confidence: 9,
       followedPlan: true,
+      tags: ['A+ Setup', 'Reversal'],
       notes: 'A+ setup at key support, full size, scaled out at target.',
     }),
   ].map((t) => ({ ...t, riskReward: computeRR(t) }));

@@ -1,6 +1,6 @@
 // Performance stats derived from the trade list.
 
-import { computeRR } from './format';
+import { computeRR, dayKey } from './format';
 
 export const tradeStats = (trades) => {
   const count = trades.length;
@@ -54,6 +54,50 @@ export const tradeStats = (trades) => {
     best,
     worst,
   };
+};
+
+// Group trades by one or more keys and summarize performance per group.
+// keyFn returns an array of keys a trade belongs to (e.g. its tags).
+export const groupPerformance = (trades, keyFn) => {
+  const map = {};
+  for (const t of trades) {
+    for (const k of keyFn(t)) {
+      const g = (map[k] ||= { key: k, count: 0, wins: 0, losses: 0, netPnl: 0 });
+      g.count += 1;
+      if (t.result === 'win') g.wins += 1;
+      else if (t.result === 'loss') g.losses += 1;
+      g.netPnl += Number(t.pnl) || 0;
+    }
+  }
+  return Object.values(map).map((g) => ({
+    ...g,
+    winRate: g.wins + g.losses ? (g.wins / (g.wins + g.losses)) * 100 : 0,
+  }));
+};
+
+const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+export const byTag = (trades) =>
+  groupPerformance(trades, (t) => (t.tags && t.tags.length ? t.tags : [])).sort(
+    (a, b) => b.netPnl - a.netPnl
+  );
+
+export const bySymbol = (trades) =>
+  groupPerformance(trades, (t) => [t.symbol || '—']).sort(
+    (a, b) => b.netPnl - a.netPnl
+  );
+
+export const byWeekday = (trades) =>
+  groupPerformance(trades, (t) => [WEEKDAYS[new Date(t.date).getDay()]]).sort(
+    (a, b) => WEEKDAYS.indexOf(a.key) - WEEKDAYS.indexOf(b.key)
+  );
+
+// Realized P&L for trades dated today (local).
+export const todayPnl = (trades) => {
+  const today = dayKey(new Date().toISOString());
+  return trades
+    .filter((t) => dayKey(t.date) === today)
+    .reduce((s, t) => s + (Number(t.pnl) || 0), 0);
 };
 
 // Cumulative P&L points for the equity curve (oldest -> newest).
