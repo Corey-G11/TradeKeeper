@@ -1,0 +1,117 @@
+/* Floating calculator launcher, bottom-right above the nav */
+.calc-fab {
+  position: absolute;
+  right: 16px;
+  bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+  z-index: 25;
+  width: 50px;
+  height: 50px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, var(--surface-3), var(--surface));
+  color: var(--cyan);
+  font-size: 22px;
+  display: grid;
+  place-items: center;
+  box-shadow: var(--shadow-lg);
+  transition: transform 0.1s var(--ease), filter 0.15s ease;
+}
+.calc-fab:active {
+  transform: scale(0.9);
+  filter: brightness(1.15);
+}
+.calc-fab .calc-fab-label {
+  position: absolute;
+  bottom: -16px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+/* Results block ---------------------------------------------------------- */
+.calc-results {
+  background: var(--bg);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-top: 2px;
+}
+.calc-hint {
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+  padding: 14px 6px;
+}
+.calc-headline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.calc-size {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+}
+.calc-size-num {
+  font-size: 34px;
+  font-weight: 900;
+  color: var(--cyan);
+  line-height: 1;
+}
+.calc-size-unit {
+  font-size: 14px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.calc-warn {
+  background: var(--gold-soft);
+  color: var(--gold);
+  border-radius: 10px;
+  padding: 9px 11px;
+  font-size: 12px;
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+.calc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+.calc-cell {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: 11px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.calc-cell span {
+  font-size: 11px;
+  color: var(--muted);
+}
+.calc-cell b {
+  font-size: 17px;
+  font-weight: 800;
+}
+.calc-cell.sl {
+  border-color: rgba(255, 90, 110, 0.4);
+}
+.calc-cell.tp {
+  border-color: rgba(30, 217, 138, 0.4);
+}
+.calc-cell.sl b {
+  color: var(--red);
+}
+.calc-cell.tp b {
+  color: var(--green);
+}
+.calc-note {
+  font-size: 11px;
+  color: var(--faint);
+  line-height: 1.5;
+  margin: 12px 2px 0;
+}

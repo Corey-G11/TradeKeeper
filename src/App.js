@@ -5,11 +5,13 @@ import Journal from './components/Journal';
 import Stats from './components/Stats';
 import TradeForm from './components/TradeForm';
 import BottomNav from './components/BottomNav';
+import PositionCalculator from './components/PositionCalculator';
 
 function App() {
   const [tab, setTab] = useState('dashboard');
   const [editing, setEditing] = useState(null); // trade being edited
   const [formOpen, setFormOpen] = useState(false);
+  const [calcOpen, setCalcOpen] = useState(false);
 
   const openNew = () => {
     setEditing(null);
@@ -37,9 +39,21 @@ function App() {
           </div>
         </main>
 
+        {!formOpen && !calcOpen && (
+          <button
+            className="calc-fab"
+            onClick={() => setCalcOpen(true)}
+            aria-label="Position calculator"
+          >
+            🧮
+            <span className="calc-fab-label">Calc</span>
+          </button>
+        )}
+
         <BottomNav tab={tab} setTab={setTab} onAdd={openNew} />
 
         {formOpen && <TradeForm trade={editing} onClose={closeForm} />}
+        {calcOpen && <PositionCalculator onClose={() => setCalcOpen(false)} />}
       </div>
     </div>
   );
