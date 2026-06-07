@@ -3,23 +3,27 @@
   gap: 8px;
   overflow-x: auto;
   padding: 4px 2px 12px;
-  margin: 8px 0 4px;
+  margin: 10px 0 4px;
 }
 .chip {
   flex: 0 0 auto;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-soft);
   color: var(--muted);
   border-radius: 999px;
-  padding: 7px 14px;
+  padding: 8px 15px;
   font-size: 13px;
-  font-weight: 600;
-  transition: all 0.15s ease;
+  font-weight: 700;
+  transition: all 0.18s var(--ease);
+}
+.chip:active {
+  transform: scale(0.94);
 }
 .chip.active {
   background: var(--text);
   color: var(--bg);
   border-color: var(--text);
+  box-shadow: 0 6px 16px rgba(240, 244, 252, 0.18);
 }
 
 .trade-list {

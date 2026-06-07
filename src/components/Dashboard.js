@@ -12,7 +12,15 @@ import {
   computeBadges,
 } from '../utils/gamification';
 import { fmtMoney, fmtNum } from '../utils/format';
+import { useCountUp } from '../utils/useCountUp';
 import { Sparkline, Ring } from './Visuals';
+
+const greeting = () => {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good morning';
+  if (h < 18) return 'Good afternoon';
+  return 'Good evening';
+};
 
 export default function Dashboard({ onAdd, goTab }) {
   const trades = useSelector(selectTrades);
@@ -26,20 +34,28 @@ export default function Dashboard({ onAdd, goTab }) {
   const curve = equityCurve(trades);
   const unlocked = badges.filter((b) => b.unlocked).length;
 
+  // animated counters
+  const xpC = useCountUp(xp);
+  const pnlC = useCountUp(stats.netPnl);
+  const wrC = useCountUp(stats.winRate);
+  const cntC = useCountUp(stats.count);
+  const progressPct = Math.round(lvl.progress * 100);
+
   return (
     <div className="dashboard">
-      <header className="app-header">
+      <header className="app-header rise">
         <div className="brand">
           <div className="logo">📈</div>
           <div>
             <h1>TradeKeeper</h1>
-            <div className="sub">Trade. Log. Level up.</div>
+            <div className="sub">{greeting()} · let's log some trades</div>
           </div>
         </div>
       </header>
 
       {/* XP / Level hero */}
-      <div className="xp-hero">
+      <div className="xp-hero rise">
+        <div className="xp-hero-glow" />
         <div className="xp-hero-top">
           <div className="level-badge">
             <span className="lvl-num">{lvl.level}</span>
@@ -47,7 +63,7 @@ export default function Dashboard({ onAdd, goTab }) {
           </div>
           <div className="xp-meta">
             <div className="rank">{lvl.title}</div>
-            <div className="xp-count mono">{fmtNum(xp, 0)} XP</div>
+            <div className="xp-count mono">{fmtNum(Math.round(xpC), 0)} XP</div>
           </div>
           <button className="streak-chip" onClick={() => goTab('stats')}>
             <span className="flame">🔥</span>
@@ -56,38 +72,37 @@ export default function Dashboard({ onAdd, goTab }) {
           </button>
         </div>
         <div className="xp-bar">
-          <div
-            className="xp-fill"
-            style={{ width: `${Math.round(lvl.progress * 100)}%` }}
-          />
+          <div className="xp-fill" style={{ width: `${progressPct}%` }}>
+            <span className="xp-shine" />
+          </div>
         </div>
         <div className="xp-foot">
-          <span>{fmtNum(lvl.intoLevel, 0)} / {fmtNum(lvl.spanLevel, 0)}</span>
-          <span>{fmtNum(lvl.toNext, 0)} XP to Lvl {lvl.level + 1}</span>
+          <span>{fmtNum(lvl.intoLevel, 0)} / {fmtNum(lvl.spanLevel, 0)} XP</span>
+          <span>{fmtNum(lvl.toNext, 0)} to Lvl {lvl.level + 1}</span>
         </div>
       </div>
 
       {/* Quick KPIs */}
-      <div className="kpi-row">
+      <div className="kpi-row rise">
         <div className="kpi">
           <div className="kpi-label">Net P&amp;L</div>
           <div className={`kpi-val mono ${stats.netPnl >= 0 ? 'pos' : 'neg'}`}>
-            {fmtMoney(stats.netPnl)}
+            {fmtMoney(pnlC)}
           </div>
         </div>
         <div className="kpi">
           <div className="kpi-label">Win Rate</div>
-          <div className="kpi-val mono">{fmtNum(stats.winRate, 0)}%</div>
+          <div className="kpi-val mono">{fmtNum(wrC, 0)}%</div>
         </div>
         <div className="kpi">
           <div className="kpi-label">Trades</div>
-          <div className="kpi-val mono">{stats.count}</div>
+          <div className="kpi-val mono">{Math.round(cntC)}</div>
         </div>
       </div>
 
       {/* Confidence tracker */}
-      <div className="section-title">Confidence Tracker</div>
-      <div className="card conf-card">
+      <div className="section-title rise">🎯 Confidence Tracker</div>
+      <div className="card conf-card rise">
         <Ring
           value={conf.calibration != null ? conf.calibration / 100 : 0}
           color="var(--cyan)"
@@ -99,10 +114,10 @@ export default function Dashboard({ onAdd, goTab }) {
             {conf.calibration == null
               ? 'Rate your conviction on a few decided trades to unlock your calibration score.'
               : conf.calibration >= 60
-              ? 'Sharp read — you tend to size conviction with winners.'
+              ? 'Sharp read — you size conviction with your winners.'
               : conf.calibration >= 45
               ? 'Decent read. Keep noticing what your A+ setups feel like.'
-              : 'Your confidence and results are out of sync. Trust your A-setups, fade the FOMO.'}
+              : 'Confidence & results are out of sync. Trust your A-setups, fade the FOMO.'}
           </p>
           <div className="conf-rows">
             <div className="conf-row">
@@ -122,8 +137,8 @@ export default function Dashboard({ onAdd, goTab }) {
       </div>
 
       {/* Equity curve */}
-      <div className="section-title">Equity Curve</div>
-      <div className="card">
+      <div className="section-title rise">📈 Equity Curve</div>
+      <div className="card rise">
         <div className="curve-head">
           <span className={`mono ${stats.netPnl >= 0 ? 'pos' : 'neg'}`}>
             {fmtMoney(stats.netPnl)}
@@ -134,10 +149,10 @@ export default function Dashboard({ onAdd, goTab }) {
       </div>
 
       {/* Badges */}
-      <div className="section-title">
-        Achievements <span className="count-tag">{unlocked}/{badges.length}</span>
+      <div className="section-title rise">
+        🏅 Achievements <span className="count-tag">{unlocked}/{badges.length}</span>
       </div>
-      <div className="badge-grid">
+      <div className="badge-grid rise">
         {badges.map((b) => (
           <div key={b.id} className={`badge ${b.unlocked ? 'on' : 'off'}`}>
             <span className="badge-icon">{b.icon}</span>
@@ -147,7 +162,7 @@ export default function Dashboard({ onAdd, goTab }) {
         ))}
       </div>
 
-      <div className="dash-cta">
+      <div className="dash-cta rise">
         <button className="btn full" onClick={onAdd}>
           + Log a Trade
         </button>

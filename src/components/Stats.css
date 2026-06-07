@@ -4,8 +4,8 @@
   gap: 8px;
 }
 .wr-big {
-  font-size: 34px;
-  font-weight: 800;
+  font-size: 36px;
+  font-weight: 900;
 }
 .wr-label {
   font-size: 13px;
@@ -13,23 +13,26 @@
 }
 .wr-bar {
   display: flex;
-  height: 12px;
+  height: 13px;
   border-radius: 999px;
   overflow: hidden;
-  margin: 12px 0 8px;
+  margin: 13px 0 9px;
   background: var(--surface-2);
+  gap: 2px;
 }
 .wr-win {
-  background: var(--green);
+  background: linear-gradient(90deg, var(--green-2), var(--green));
+  transition: width 0.9s var(--ease);
 }
 .wr-loss {
-  background: var(--red);
+  background: linear-gradient(90deg, var(--red), #d63a4c);
+  transition: width 0.9s var(--ease);
 }
 .wr-legend {
   display: flex;
   justify-content: space-between;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .stat-grid {
@@ -38,38 +41,43 @@
   gap: 10px;
 }
 .stat-box {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--surface), var(--bg-2));
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius-sm);
-  padding: 13px 14px;
+  padding: 14px;
+  box-shadow: var(--shadow);
 }
 .stat-label {
   font-size: 12px;
   color: var(--muted);
-  margin-bottom: 5px;
+  margin-bottom: 6px;
+  font-weight: 600;
 }
 .stat-value {
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 800;
 }
 .stat-value.gold {
   color: var(--gold);
 }
 .stat-value.xp {
-  color: #b9a3ff;
+  color: var(--xp-2);
   font-size: 16px;
 }
 
 .conf-stats .conf-line {
   display: flex;
   justify-content: space-between;
-  padding: 9px 0;
-  border-bottom: 1px solid var(--border);
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border-soft);
   font-size: 13px;
   color: var(--muted);
 }
 .conf-stats .conf-line:first-child {
   padding-top: 0;
+}
+.conf-stats .conf-line:last-of-type {
+  border-bottom: none;
 }
 .conf-stats .conf-line span.mono {
   color: var(--text);
@@ -78,7 +86,7 @@
 .conf-note {
   font-size: 12px;
   color: var(--muted);
-  line-height: 1.5;
+  line-height: 1.55;
   margin: 12px 0 0;
 }
 
@@ -86,5 +94,5 @@
   text-align: center;
   font-size: 11px;
   color: var(--faint);
-  margin: 26px 0 6px;
+  margin: 28px 0 6px;
 }
