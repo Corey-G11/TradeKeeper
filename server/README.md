@@ -1,53 +1,55 @@
-# TradeKeeper Server (Tradovate auto-journaling)
+# TradeKeeper Server — Docker backup store (+ optional Tradovate import)
 
-A tiny Node/Express service that authenticates to **Tradovate (demo)**, pulls
-your fills, reconstructs round-trip trades with P&L, and serves them to the
-TradeKeeper app. Secrets live here (as env vars), never in the front-end.
+A tiny Node/Express service that **holds your journal in a persistent Docker
+volume** so you have a backup outside the browser. It also has the optional
+Tradovate auto-import endpoints from the earlier scaffold.
 
-> Status: **scaffold, untested against a live Tradovate account.** Endpoint
-> shapes need a quick verification pass against current Tradovate API docs.
-> See `tradovate.js` for the spots marked ⚠️.
-
-## Endpoints
-
-- `GET /health` – liveness + which environment (demo/live)
-- `POST /api/sync` – pull fills from Tradovate, merge, return all trades
-- `GET /api/trades` – return imported trades (flagged `source: "tradovate"`)
-
-## Run locally
+## Run it in Docker
 
 ```bash
 cd server
-cp .env.example .env     # fill in your Tradovate demo credentials
-npm install
-npm start                # http://localhost:8080/health
+docker compose up -d --build
+curl localhost:8080/health        # {"ok":true,...}
 ```
 
-## Deploy (Render / Railway — both have free tiers)
+Your data lives in the **`tradekeeper-data`** volume and survives container
+restarts, rebuilds, and `docker compose down`.
 
-1. Push this repo to GitHub (done).
-2. Create a new **Web Service**, point it at this repo, root directory `server`.
-3. Build command `npm install`, start command `npm start`.
-4. Add the env vars from `.env.example` (your Tradovate demo creds).
-5. Set `ALLOW_ORIGIN=https://corey-g11.github.io`.
-6. Deploy → you'll get a URL like `https://tradekeeper.onrender.com`.
+Snapshot the volume to a file anytime:
 
-Send me that URL and I'll wire a **Connections → Sync now** button into the
-app that calls `/api/sync` and merges imported trades into your journal
-(flagged "needs review" so you can add confidence + notes).
+```bash
+docker run --rm -v tradekeeper-data:/data -v "$PWD":/out alpine \
+  tar czf /out/tradekeeper-backup.tgz -C /data .
+```
 
-## What I still need from you
+## Backup endpoints (used by the app's Backup screen)
 
-- **Tradovate API credentials** (key id `cid` + secret `sec`). Request these
-  from Tradovate (API access). Put them in the host's env vars — **don't paste
-  them in chat.**
-- **Hosting choice** (Render, Railway, Fly, your own box…).
+- `GET  /api/backup` → `{ trades, settings, updatedAt }`
+- `PUT  /api/backup` → body `{ trades, settings }` → saves & returns count
+- `GET  /health`
 
-## Notes / next steps
+If you set `BACKUP_TOKEN` (in `docker-compose.yml`), both `/api/backup`
+calls require header `Authorization: Bearer <token>`. Put the same token in
+the app's Backup screen.
 
-- The store is a flat JSON file for now (single user). Swap for a real DB
-  (Postgres/SQLite) when you want history + multi-device.
-- P&L uses a point-value table as a fallback; we should read true contract
-  specs from `/product/item` for exotic instruments.
-- Phase 4: replace manual "Sync now" with background polling or the Tradovate
-  WebSocket for truly automatic journaling.
+## ⚠️ Connecting the app to this container
+
+Browsers block an **HTTPS page** (the hosted app at
+`https://corey-g11.github.io/...`) from calling an **HTTP** server. So a
+plain local `http://localhost:8080` works only when you also open the app
+over http/localhost. Two ways to use it:
+
+1. **Local use** — run the app locally too (`npm start` in the repo root →
+   `http://localhost:3000`) and point Backup at `http://localhost:8080`.
+2. **Anywhere (phone)** — expose the container over **HTTPS**: put it behind
+   a reverse proxy with a cert (Caddy/Traefik/nginx) or a tunnel
+   (`cloudflared`, `ngrok`). Then use that `https://…` URL in the app.
+
+Either way, **file Export/Import in the app always works** with no server —
+that's the zero-setup backup.
+
+## Tradovate import (optional)
+
+Set the `TRADOVATE_*` env vars in `docker-compose.yml` and call
+`POST /api/sync`. Endpoint shapes in `tradovate.js` should be verified
+against current Tradovate API docs before live use.

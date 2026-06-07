@@ -6,41 +6,85 @@ import { fileURLToPath } from 'url';
 import { syncTrades, tradovateEnv } from './tradovate.js';
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '5mb' }));
 app.use(
   cors({
-    origin: process.env.ALLOW_ORIGIN || '*', // set to your Pages URL in prod
+    origin: process.env.ALLOW_ORIGIN || '*', // set to your app URL in prod
   })
 );
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const STORE = path.join(__dirname, 'trades.json');
 
-const readStore = async () => {
+// Persistent data dir. In Docker this is a mounted volume (see docker-compose).
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
+const TRADES_STORE = path.join(DATA_DIR, 'trades.json'); // Tradovate imports
+const BACKUP_STORE = path.join(DATA_DIR, 'backup.json'); // app backups
+
+const ensureDir = () => fs.mkdir(DATA_DIR, { recursive: true });
+
+const readJson = async (file, fallback) => {
   try {
-    return JSON.parse(await fs.readFile(STORE, 'utf8'));
+    return JSON.parse(await fs.readFile(file, 'utf8'));
   } catch {
-    return [];
+    return fallback;
   }
 };
-const writeStore = (trades) => fs.writeFile(STORE, JSON.stringify(trades, null, 2));
+const writeJson = async (file, data) => {
+  await ensureDir();
+  await fs.writeFile(file, JSON.stringify(data, null, 2));
+};
+
+// Optional shared secret. If BACKUP_TOKEN is set, backup routes require
+// `Authorization: Bearer <token>`.
+const requireToken = (req, res, next) => {
+  const token = process.env.BACKUP_TOKEN;
+  if (!token) return next();
+  const got = (req.headers.authorization || '').replace(/^Bearer\s+/i, '');
+  if (got !== token) return res.status(401).json({ error: 'unauthorized' });
+  return next();
+};
 
 app.get('/health', (_req, res) =>
   res.json({ ok: true, env: tradovateEnv, time: new Date().toISOString() })
 );
 
-// Return the trades we've imported so far.
-app.get('/api/trades', async (_req, res) => {
-  res.json(await readStore());
+/* ---- Backup (the Docker-persisted store for your journal) ---- */
+
+// Fetch the latest backup of your journal + settings.
+app.get('/api/backup', requireToken, async (_req, res) => {
+  const data = await readJson(BACKUP_STORE, {
+    trades: [],
+    settings: {},
+    updatedAt: null,
+  });
+  res.json(data);
 });
 
-// Pull fresh fills from Tradovate, merge into the store, return everything.
+// Save a backup. Body: { trades: [...], settings: {...} }
+app.put('/api/backup', requireToken, async (req, res) => {
+  const { trades, settings } = req.body || {};
+  if (!Array.isArray(trades)) {
+    return res.status(400).json({ error: 'trades must be an array' });
+  }
+  const record = {
+    trades,
+    settings: settings || {},
+    updatedAt: new Date().toISOString(),
+  };
+  await writeJson(BACKUP_STORE, record);
+  return res.json({ ok: true, updatedAt: record.updatedAt, count: trades.length });
+});
+
+/* ---- Tradovate auto-import (optional, from the scaffold) ---- */
+
+app.get('/api/trades', async (_req, res) => {
+  res.json(await readJson(TRADES_STORE, []));
+});
+
 app.post('/api/sync', async (_req, res) => {
   try {
     const imported = await syncTrades();
-    const existing = await readStore();
-
-    // De-dupe on symbol+date+entry+exit so re-syncing is idempotent.
+    const existing = await readJson(TRADES_STORE, []);
     const key = (t) => `${t.symbol}|${t.date}|${t.entry}|${t.exit}`;
     const seen = new Set(existing.map(key));
     const merged = [...existing];
@@ -52,7 +96,7 @@ app.post('/api/sync', async (_req, res) => {
         added += 1;
       }
     }
-    await writeStore(merged);
+    await writeJson(TRADES_STORE, merged);
     res.json({ added, total: merged.length, trades: merged });
   } catch (err) {
     res.status(502).json({ error: String(err.message || err) });
@@ -62,5 +106,5 @@ app.post('/api/sync', async (_req, res) => {
 const port = process.env.PORT || 8080;
 app.listen(port, () => {
   // eslint-disable-next-line no-console
-  console.log(`TradeKeeper server (${tradovateEnv}) listening on :${port}`);
+  console.log(`TradeKeeper server (${tradovateEnv}) on :${port}, data in ${DATA_DIR}`);
 });

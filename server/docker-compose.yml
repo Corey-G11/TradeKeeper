@@ -1,0 +1,35 @@
+# TradeKeeper backup store.
+#   docker compose up -d        # start, persists to the named volume
+#   docker compose down         # stop (your data stays in the volume)
+#   curl localhost:8080/health  # check it's alive
+#
+# Your journal is held in the `tradekeeper-data` volume and survives restarts,
+# rebuilds and `compose down`. Back it up with:
+#   docker run --rm -v tradekeeper-data:/data -v "$PWD":/out alpine \
+#     tar czf /out/tradekeeper-backup.tgz -C /data .
+
+services:
+  tradekeeper:
+    build: .
+    container_name: tradekeeper
+    ports:
+      - '8080:8080'
+    environment:
+      - DATA_DIR=/data
+      # Lock this to your app's origin in production, e.g.
+      # https://corey-g11.github.io
+      - ALLOW_ORIGIN=*
+      # Uncomment to require a secret on backup requests:
+      # - BACKUP_TOKEN=change-me-to-something-long
+      # Optional Tradovate auto-import:
+      # - TRADOVATE_ENV=demo
+      # - TRADOVATE_CID=
+      # - TRADOVATE_SEC=
+      # - TRADOVATE_USERNAME=
+      # - TRADOVATE_PASSWORD=
+    volumes:
+      - tradekeeper-data:/data
+    restart: unless-stopped
+
+volumes:
+  tradekeeper-data:
