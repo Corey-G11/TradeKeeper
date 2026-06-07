@@ -1,8 +1,9 @@
 .sheet-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(3, 6, 12, 0.66);
-  backdrop-filter: blur(3px);
+  background: rgba(3, 6, 12, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   z-index: 50;
   display: flex;
   align-items: flex-end;
@@ -87,13 +88,14 @@
   border-radius: 11px;
   color: var(--text);
   padding: 12px;
-  font-size: 16px; /* 16px avoids iOS zoom on focus */
+  font-size: 16px;
   outline: none;
   transition: border-color 0.15s ease;
 }
 .field input:focus,
 .field textarea:focus {
   border-color: var(--green);
+  box-shadow: var(--ring-focus);
 }
 .field textarea {
   resize: vertical;
@@ -231,7 +233,7 @@
   font-weight: 600;
 }
 .toggle-row.on {
-  border-color: rgba(22, 199, 132, 0.4);
+  border-color: rgba(30, 217, 138, 0.4);
 }
 .switch {
   width: 44px;
@@ -264,15 +266,15 @@
   align-items: center;
   justify-content: space-between;
   background: var(--xp-soft);
-  border: 1px solid rgba(139, 123, 255, 0.3);
+  border: 1px solid rgba(141, 123, 255, 0.3);
   border-radius: 12px;
   padding: 12px 14px;
   font-size: 14px;
-  color: #c4bcff;
+  color: var(--xp-2);
   font-weight: 700;
 }
 
 .save-btn {
-  background: linear-gradient(135deg, var(--green), #0c8f60);
+  background: linear-gradient(135deg, var(--green), var(--green-2));
   margin-top: 2px;
 }
