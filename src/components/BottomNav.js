@@ -33,12 +33,19 @@ const Icon = ({ name }) => {
           <path d="M7 14l4-4 3 3 5-6" />
         </svg>
       );
+    case 'calc':
+      return (
+        <svg {...common}>
+          <rect x="4" y="2" width="16" height="20" rx="2" />
+          <path d="M8 6h8M8 10h0M12 10h0M16 10h0M8 14h0M12 14h0M16 14h0M8 18h0M12 18h0M16 18h0" />
+        </svg>
+      );
     default:
       return null;
   }
 };
 
-export default function BottomNav({ tab, setTab, onAdd }) {
+export default function BottomNav({ tab, setTab, onAdd, onCalc }) {
   return (
     <nav className="bottom-nav">
       <button
@@ -77,8 +84,9 @@ export default function BottomNav({ tab, setTab, onAdd }) {
         <Icon name="stats" />
         <span>Stats</span>
       </button>
-      <button className="nav-item placeholder" disabled aria-hidden="true">
-        <span style={{ opacity: 0 }}>.</span>
+      <button className="nav-item" onClick={onCalc}>
+        <Icon name="calc" />
+        <span>Calc</span>
       </button>
     </nav>
   );

@@ -39,18 +39,12 @@ function App() {
           </div>
         </main>
 
-        {!formOpen && !calcOpen && (
-          <button
-            className="calc-fab"
-            onClick={() => setCalcOpen(true)}
-            aria-label="Position calculator"
-          >
-            🧮
-            <span className="calc-fab-label">Calc</span>
-          </button>
-        )}
-
-        <BottomNav tab={tab} setTab={setTab} onAdd={openNew} />
+        <BottomNav
+          tab={tab}
+          setTab={setTab}
+          onAdd={openNew}
+          onCalc={() => setCalcOpen(true)}
+        />
 
         {formOpen && <TradeForm trade={editing} onClose={closeForm} />}
         {calcOpen && <PositionCalculator onClose={() => setCalcOpen(false)} />}
