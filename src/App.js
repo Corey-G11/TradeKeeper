@@ -30,9 +30,11 @@ function App() {
     <div className="app">
       <div className="phone">
         <main className="screen">
-          {tab === 'dashboard' && <Dashboard onAdd={openNew} goTab={setTab} />}
-          {tab === 'journal' && <Journal onAdd={openNew} onEdit={openEdit} />}
-          {tab === 'stats' && <Stats />}
+          <div className="screen-inner" key={tab}>
+            {tab === 'dashboard' && <Dashboard onAdd={openNew} goTab={setTab} />}
+            {tab === 'journal' && <Journal onAdd={openNew} onEdit={openEdit} />}
+            {tab === 'stats' && <Stats />}
+          </div>
         </main>
 
         <BottomNav tab={tab} setTab={setTab} onAdd={openNew} />
