@@ -11,6 +11,7 @@ import {
   confidenceStats,
 } from '../utils/gamification';
 import { fmtMoney, fmtNum } from '../utils/format';
+import CalendarHeatmap from './CalendarHeatmap';
 
 const Stat = ({ label, value, cls }) => (
   <div className="stat-box">
@@ -89,6 +90,9 @@ export default function Stats() {
           <span className="neg">{s.losses}L</span>
         </div>
       </div>
+
+      <div className="section-title">📅 P&amp;L Calendar</div>
+      <CalendarHeatmap trades={trades} />
 
       <div className="section-title">Performance</div>
       <div className="stat-grid">

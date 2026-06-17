@@ -1,0 +1,100 @@
+.cal {
+  padding: 14px;
+}
+.cal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.cal-nav {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 18px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+}
+.cal-nav:active {
+  transform: scale(0.92);
+}
+.cal-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+.cal-title > span:first-child {
+  font-size: 15px;
+  font-weight: 800;
+}
+.cal-total {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+.cal-wd {
+  margin-bottom: 5px;
+}
+.cal-wd span {
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--faint);
+}
+
+.cal-cell {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-soft);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  overflow: hidden;
+}
+.cal-cell.empty {
+  background: none;
+  border: none;
+}
+.cal-cell.has {
+  border-color: transparent;
+}
+.cal-cell.today {
+  outline: 2px solid var(--cyan);
+  outline-offset: -2px;
+}
+.cal-d {
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: 600;
+  line-height: 1;
+}
+.cal-cell.has .cal-d {
+  color: var(--text);
+}
+.cal-p {
+  font-size: 9.5px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text);
+}
+
+.cal-foot {
+  margin-top: 11px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--muted);
+}
