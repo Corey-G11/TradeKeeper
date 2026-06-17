@@ -5,6 +5,7 @@ import { addTrade, updateTrade, deleteTrade } from '../features/trades/tradesSli
 import { computeRR, fmtNum } from '../utils/format';
 import { xpForTrade } from '../utils/gamification';
 import { COMMON_TAGS } from '../utils/settings';
+import TradeChart from './TradeChart';
 
 const blank = {
   market: 'futures',
@@ -115,6 +116,12 @@ export default function TradeForm({ trade, prefill, onClose }) {
           {prefill && !isEdit && (
             <div className="prefill-note">🧮 Pre-filled from your calculator — add the result after the trade closes.</div>
           )}
+
+          {Number.isFinite(Number(form.entry)) &&
+            (Number.isFinite(Number(form.stopLoss)) ||
+              Number.isFinite(Number(form.profitTarget))) && (
+              <TradeChart trade={form} />
+            )}
 
           {/* Market */}
           <div className="seg">

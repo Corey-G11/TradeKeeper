@@ -1,0 +1,37 @@
+# Render.com blueprint — always-on host for the TradeKeeper backend
+# (backup store + Tradovate auto-import + auto-generated trade charts).
+#
+# Deploy: push this repo to GitHub, then in Render → "New +" → "Blueprint",
+# pick this repo. Render reads this file and creates the service + disk.
+# Set your Tradovate secrets in the dashboard (they're marked sync:false).
+
+services:
+  - type: web
+    name: tradekeeper
+    runtime: docker
+    repo: https://github.com/Corey-G11/TradeKeeper
+    dockerfilePath: ./server/Dockerfile
+    dockerContext: ./server
+    plan: starter # needs a paid instance for a persistent disk; free has none
+    healthCheckPath: /health
+    envVars:
+      - key: DATA_DIR
+        value: /data
+      - key: ALLOW_ORIGIN
+        value: https://corey-g11.github.io
+      - key: BACKUP_TOKEN
+        generateValue: true # random secret; copy it into the app's Backup screen
+      - key: TRADOVATE_ENV
+        value: demo
+      - key: TRADOVATE_CID
+        sync: false
+      - key: TRADOVATE_SEC
+        sync: false
+      - key: TRADOVATE_USERNAME
+        sync: false
+      - key: TRADOVATE_PASSWORD
+        sync: false
+    disk:
+      name: tradekeeper-data
+      mountPath: /data
+      sizeGB: 1

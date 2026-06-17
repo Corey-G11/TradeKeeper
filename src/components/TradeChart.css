@@ -1,0 +1,137 @@
+.trade-chart {
+  background: var(--bg);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 10px 10px 8px;
+}
+.tch-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  font-family: var(--mono);
+}
+
+.tch-line {
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+}
+.tch-line.win {
+  stroke: var(--green);
+}
+.tch-line.loss {
+  stroke: var(--red);
+}
+.tch-line.entry {
+  stroke: var(--muted);
+  stroke-dasharray: 2 3;
+}
+
+.tch-plabel {
+  font-size: 9px;
+  font-weight: 700;
+}
+.tch-plabel.win {
+  fill: var(--green);
+}
+.tch-plabel.loss {
+  fill: var(--red);
+}
+.tch-plabel.entry {
+  fill: var(--muted);
+}
+
+.tch-zone {
+  opacity: 0.08;
+}
+.tch-zone.win {
+  fill: var(--green);
+}
+.tch-zone.loss {
+  fill: var(--red);
+}
+
+.tch-path {
+  fill: none;
+  stroke: var(--cyan);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 600;
+  stroke-dashoffset: 600;
+  animation: tch-draw 1s var(--ease) forwards;
+}
+@keyframes tch-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.tch-wick {
+  stroke: var(--muted);
+  stroke-width: 1;
+}
+.tch-up .tch-body,
+.tch-up .tch-wick {
+  stroke: var(--green);
+  fill: var(--green);
+}
+.tch-down .tch-body,
+.tch-down .tch-wick {
+  stroke: var(--red);
+  fill: var(--red);
+}
+
+.tch-entry-dot {
+  fill: var(--cyan);
+  stroke: var(--bg);
+  stroke-width: 2;
+}
+.tch-exit-dot {
+  stroke: var(--bg);
+  stroke-width: 2;
+}
+.tch-exit-dot.win {
+  fill: var(--green);
+}
+.tch-exit-dot.loss {
+  fill: var(--red);
+}
+.tch-exit-dot.be {
+  fill: var(--gold);
+}
+.tch-mk {
+  font-size: 10px;
+  fill: var(--cyan);
+  text-anchor: middle;
+  font-weight: 800;
+}
+
+.tch-legend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.tch-tag.entry {
+  color: var(--cyan);
+}
+.tch-tag.win {
+  color: var(--green);
+}
+.tch-tag.loss {
+  color: var(--red);
+}
+.tch-tag.be {
+  color: var(--gold);
+}
+.tch-dir {
+  margin-left: auto;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  background: var(--surface-2);
+  padding: 2px 8px;
+  border-radius: 6px;
+}
