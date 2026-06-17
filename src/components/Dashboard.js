@@ -23,7 +23,7 @@ const greeting = () => {
   return 'Good evening';
 };
 
-export default function Dashboard({ onAdd, goTab, onBackup }) {
+export default function Dashboard({ onAdd, goTab, onBackup, onConnections }) {
   const trades = useSelector(selectTrades);
   const stats = tradeStats(trades);
   const xp = totalXp(trades);
@@ -65,9 +65,14 @@ export default function Dashboard({ onAdd, goTab, onBackup }) {
             <div className="sub">{greeting()} · let's log some trades</div>
           </div>
         </div>
-        <button className="header-btn" onClick={onBackup} aria-label="Backup &amp; restore">
-          ☁︎
-        </button>
+        <div className="header-actions">
+          <button className="header-btn" onClick={onConnections} aria-label="Connections">
+            🔗
+          </button>
+          <button className="header-btn" onClick={onBackup} aria-label="Backup &amp; restore">
+            ☁︎
+          </button>
+        </div>
       </header>
 
       {/* XP / Level hero */}

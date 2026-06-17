@@ -31,6 +31,12 @@ services:
         sync: false
       - key: TRADOVATE_PASSWORD
         sync: false
+      # Optional candle source for auto-charts (template URL returning OHLC).
+      # See server/tradovate.js fetchCandles + docs/CHARTS.md.
+      - key: CANDLES_URL
+        sync: false
+      - key: CANDLES_TOKEN
+        sync: false
     disk:
       name: tradekeeper-data
       mountPath: /data

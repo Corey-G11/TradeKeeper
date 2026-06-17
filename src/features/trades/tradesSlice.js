@@ -127,9 +127,22 @@ const tradesSlice = createSlice({
     deleteTrade(state, action) {
       state.items = state.items.filter((t) => t.id !== action.payload);
     },
+    // Merge in trades from an external source (e.g. Tradovate), skipping any
+    // whose id is already present so re-syncing is idempotent.
+    mergeTrades(state, action) {
+      const have = new Set(state.items.map((t) => t.id));
+      for (const t of action.payload) {
+        if (t && t.id && !have.has(t.id)) {
+          state.items.unshift({ tags: [], ...t });
+          have.add(t.id);
+        }
+      }
+      state.items.sort((a, b) => new Date(b.date) - new Date(a.date));
+    },
   },
 });
 
-export const { addTrade, updateTrade, deleteTrade } = tradesSlice.actions;
+export const { addTrade, updateTrade, deleteTrade, mergeTrades } =
+  tradesSlice.actions;
 export const selectTrades = (state) => state.trades.items;
 export default tradesSlice.reducer;

@@ -85,3 +85,14 @@ export const cloudRestore = async (url, token) => {
   applyBackup(data);
   return data;
 };
+
+// Ask the backend to pull fresh fills from Tradovate and return the
+// reconstructed trades (with chart candles attached when available).
+export const cloudSync = async (url, token) => {
+  const res = await fetch(`${base(url)}/api/sync`, {
+    method: 'POST',
+    headers: headers(token),
+  });
+  if (!res.ok) throw new Error(`Sync failed (${res.status})`);
+  return res.json(); // { added, total, trades }
+};

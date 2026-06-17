@@ -7,6 +7,7 @@ import TradeForm from './components/TradeForm';
 import BottomNav from './components/BottomNav';
 import PositionCalculator from './components/PositionCalculator';
 import BackupModal from './components/BackupModal';
+import ConnectionsModal from './components/ConnectionsModal';
 
 function App() {
   const [tab, setTab] = useState('dashboard');
@@ -15,6 +16,7 @@ function App() {
   const [formOpen, setFormOpen] = useState(false);
   const [calcOpen, setCalcOpen] = useState(false);
   const [backupOpen, setBackupOpen] = useState(false);
+  const [connOpen, setConnOpen] = useState(false);
 
   const openNew = () => {
     setEditing(null);
@@ -51,6 +53,7 @@ function App() {
                 onAdd={openNew}
                 goTab={setTab}
                 onBackup={() => setBackupOpen(true)}
+                onConnections={() => setConnOpen(true)}
               />
             )}
             {tab === 'journal' && <Journal onAdd={openNew} onEdit={openEdit} />}
@@ -75,6 +78,7 @@ function App() {
           />
         )}
         {backupOpen && <BackupModal onClose={() => setBackupOpen(false)} />}
+        {connOpen && <ConnectionsModal onClose={() => setConnOpen(false)} />}
       </div>
     </div>
   );
