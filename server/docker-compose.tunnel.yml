@@ -1,0 +1,18 @@
+# HTTPS for your phone, with zero domain setup — Cloudflare Quick Tunnel.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.tunnel.yml up -d --build
+#   docker compose logs -f cloudflared      # copy the https://<random>.trycloudflare.com URL
+#
+# Paste that https URL into the app's Backup screen → it now reaches your
+# Docker backup store from anywhere (phone included). The URL changes each
+# time the tunnel restarts; for a permanent address use a named tunnel
+# (cloudflared with a Cloudflare account + your own domain).
+
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: tradekeeper-tunnel
+    command: tunnel --no-autoupdate --url http://tradekeeper:8080
+    depends_on:
+      - tradekeeper
+    restart: unless-stopped

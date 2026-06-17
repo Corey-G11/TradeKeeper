@@ -41,12 +41,27 @@ over http/localhost. Two ways to use it:
 
 1. **Local use** — run the app locally too (`npm start` in the repo root →
    `http://localhost:3000`) and point Backup at `http://localhost:8080`.
-2. **Anywhere (phone)** — expose the container over **HTTPS**: put it behind
-   a reverse proxy with a cert (Caddy/Traefik/nginx) or a tunnel
-   (`cloudflared`, `ngrok`). Then use that `https://…` URL in the app.
+2. **Anywhere (phone)** — expose the container over **HTTPS**. The easiest is
+   the included Cloudflare Quick Tunnel (no domain, no account):
+
+   ```bash
+   docker compose -f docker-compose.yml -f docker-compose.tunnel.yml up -d --build
+   docker compose logs -f cloudflared   # copy the https://<random>.trycloudflare.com URL
+   ```
+
+   Paste that `https://…` URL into the app's Backup screen. (The URL changes
+   on restart; for a fixed address use a named Cloudflare tunnel + your
+   domain, or a reverse proxy like Caddy/Traefik with a cert.)
 
 Either way, **file Export/Import in the app always works** with no server —
 that's the zero-setup backup.
+
+## Auto-backup
+
+In the app's Backup screen, **Auto-backup after each trade** (on by default)
+silently `PUT`s your journal to the server URL a couple of seconds after any
+change. Failures are silent — manual backup and file export remain the safety
+net.
 
 ## Tradovate import (optional)
 

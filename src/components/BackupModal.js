@@ -13,13 +13,21 @@ export default function BackupModal({ onClose }) {
   const saved = loadSettings();
   const [url, setUrl] = useState(saved.backupUrl || '');
   const [token, setToken] = useState(saved.backupToken || '');
+  const [auto, setAuto] = useState(saved.autoBackup !== false);
   const [status, setStatus] = useState(null); // { kind, msg }
   const [busy, setBusy] = useState(false);
   const fileRef = useRef(null);
 
   const tradeCount = readTrades().length;
 
-  const persist = (u, t) => saveSettings({ ...loadSettings(), backupUrl: u, backupToken: t });
+  const persist = (u, t) =>
+    saveSettings({ ...loadSettings(), backupUrl: u, backupToken: t });
+
+  const toggleAuto = () => {
+    const next = !auto;
+    setAuto(next);
+    saveSettings({ ...loadSettings(), autoBackup: next });
+  };
 
   const onImport = async (e) => {
     const file = e.target.files && e.target.files[0];
@@ -138,6 +146,16 @@ export default function BackupModal({ onClose }) {
                 Restore
               </button>
             </div>
+            <button
+              type="button"
+              className={`toggle-row ${auto ? 'on' : ''}`}
+              onClick={toggleAuto}
+            >
+              <span>⚡ Auto-backup after each trade</span>
+              <span className={`switch ${auto ? 'on' : ''}`}>
+                <i />
+              </span>
+            </button>
           </div>
 
           {status && <div className={`bk-status ${status.kind}`}>{status.msg}</div>}
