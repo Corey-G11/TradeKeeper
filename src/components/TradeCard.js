@@ -28,6 +28,7 @@ export default function TradeCard({ trade, onEdit }) {
             </span>
             <span className="sym">{trade.symbol || '—'}</span>
             <span className="mkt">{trade.market}</span>
+            {trade.needsReview && <span className="pill be tc-review">REVIEW</span>}
           </div>
           <span className={`pill ${meta.cls}`}>{meta.label}</span>
         </div>

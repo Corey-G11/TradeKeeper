@@ -81,6 +81,7 @@ export default function TradeForm({ trade, prefill, onClose }) {
       pnl: numify(form.pnl),
       confidence: Number(form.confidence),
       tags: form.tags,
+      needsReview: false, // saving clears it from the review queue
       date: new Date(form.date + 'T12:00:00').toISOString(),
     };
     if (isEdit) {
