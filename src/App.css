@@ -178,3 +178,28 @@
   color: var(--muted);
   margin-top: 2px;
 }
+
+/* Desktop layout: side nav + wider centered content ---------------------- */
+@media (min-width: 1024px) {
+  .app {
+    align-items: stretch;
+  }
+  .phone {
+    max-width: 1180px;
+    width: 100%;
+    height: 100vh;
+    min-height: 0;
+    margin: 0 auto;
+    flex-direction: row;
+    border-left: 1px solid var(--border-soft);
+    border-right: 1px solid var(--border-soft);
+  }
+  .screen {
+    height: 100vh;
+    padding: 30px 40px 56px;
+  }
+  .screen-inner {
+    max-width: 920px;
+    margin: 0 auto;
+  }
+}
