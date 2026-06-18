@@ -63,7 +63,12 @@ body {
   letter-spacing: -0.011em;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  overscroll-behavior-y: none;
+  /* Lock the page so only the content area scrolls (native-app feel) */
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 button {
