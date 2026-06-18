@@ -1,27 +1,28 @@
 :root {
-  /* Day-trader dark palette */
-  --bg: #060912;
-  --bg-2: #0b1120;
-  --surface: #111a2e;
-  --surface-2: #18233c;
-  --surface-3: #1f2c49;
-  --border: #243352;
-  --border-soft: #1b2740;
-  --text: #f0f4fc;
-  --muted: #92a0bd;
-  --faint: #5d6a86;
+  /* Futuristic Elegance — luxury palette
+     Midnight Indigo · Cosmic Violet · Solar Flare · Horizon Blue · Porcelain */
+  --bg: #0d1b2a;        /* Midnight Indigo */
+  --bg-2: #112536;
+  --surface: #172a40;
+  --surface-2: #21364f;
+  --surface-3: #2c4566;
+  --border: #324d70;
+  --border-soft: #21374f;
+  --text: #f6f2e8;      /* Porcelain */
+  --muted: #c5c0c9;     /* Lavender Mist */
+  --faint: #7b86a0;
 
   --green: #1ed98a;
-  --green-2: #11b774;
+  --green-2: #12b577;
   --green-soft: rgba(30, 217, 138, 0.14);
   --red: #ff5a6e;
   --red-soft: rgba(255, 90, 110, 0.14);
-  --gold: #ffb524;
-  --gold-soft: rgba(255, 181, 36, 0.16);
-  --xp: #8d7bff;
-  --xp-2: #b9a3ff;
-  --xp-soft: rgba(141, 123, 255, 0.16);
-  --cyan: #34dbe8;
+  --gold: #ff7a00;      /* Solar Flare */
+  --gold-soft: rgba(255, 122, 0, 0.16);
+  --xp: #8a6bff;        /* Cosmic Violet (bright) */
+  --xp-2: #c3b3ff;
+  --xp-soft: rgba(138, 107, 255, 0.16);
+  --cyan: #6fa7ff;      /* Horizon Blue */
 
   /* spacing scale */
   --s1: 4px;
