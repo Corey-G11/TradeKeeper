@@ -139,10 +139,13 @@ const tradesSlice = createSlice({
       }
       state.items.sort((a, b) => new Date(b.date) - new Date(a.date));
     },
+    clearAllTrades(state) {
+      state.items = [];
+    },
   },
 });
 
-export const { addTrade, updateTrade, deleteTrade, mergeTrades } =
+export const { addTrade, updateTrade, deleteTrade, mergeTrades, clearAllTrades } =
   tradesSlice.actions;
 export const selectTrades = (state) => state.trades.items;
 export default tradesSlice.reducer;

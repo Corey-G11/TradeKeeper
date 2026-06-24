@@ -47,6 +47,15 @@
   background: var(--surface-2);
   color: var(--muted);
 }
+.bk-danger {
+  border-color: rgba(255, 90, 110, 0.3);
+}
+.bk-confirm p {
+  font-size: 13px;
+  color: var(--red);
+  margin: 0 0 10px;
+  line-height: 1.4;
+}
 .bk-hint {
   font-size: 11px;
   color: var(--faint);

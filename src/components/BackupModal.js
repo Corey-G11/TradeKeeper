@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import './BackupModal.css';
 import { loadSettings, saveSettings } from '../utils/settings';
 import {
@@ -8,17 +9,27 @@ import {
   cloudRestore,
   readTrades,
 } from '../utils/backup';
+import { clearAllTrades, persistTrades } from '../features/trades/tradesSlice';
 
 export default function BackupModal({ onClose }) {
+  const dispatch = useDispatch();
   const saved = loadSettings();
   const [url, setUrl] = useState(saved.backupUrl || '');
   const [token, setToken] = useState(saved.backupToken || '');
   const [auto, setAuto] = useState(saved.autoBackup !== false);
-  const [status, setStatus] = useState(null); // { kind, msg }
+  const [status, setStatus] = useState(null);
   const [busy, setBusy] = useState(false);
   const fileRef = useRef(null);
 
   const tradeCount = readTrades().length;
+  const [confirmClear, setConfirmClear] = useState(false);
+
+  const doClear = () => {
+    dispatch(clearAllTrades());
+    persistTrades([]);
+    setConfirmClear(false);
+    setStatus({ kind: 'ok', msg: 'All trades cleared.' });
+  };
 
   const persist = (u, t) =>
     saveSettings({ ...loadSettings(), backupUrl: u, backupToken: t });
@@ -75,9 +86,9 @@ export default function BackupModal({ onClose }) {
       <div className="sheet" onClick={(e) => e.stopPropagation()}>
         <div className="sheet-handle" />
         <div className="sheet-head">
-          <h2>☁︎ Backup &amp; Restore</h2>
+          <h2>&#9729;&#65038; Backup &amp; Restore</h2>
           <button className="x" onClick={onClose} aria-label="Close">
-            ✕
+            &#10005;
           </button>
         </div>
 
@@ -87,9 +98,8 @@ export default function BackupModal({ onClose }) {
             on this device. Back them up so you never lose them.
           </div>
 
-          {/* File backup — always works */}
           <div className="bk-section">
-            <div className="bk-title">📄 File (no server)</div>
+            <div className="bk-title">&#128196; File (no server)</div>
             <div className="bk-actions">
               <button className="btn" onClick={downloadBackup}>
                 Export to file
@@ -107,9 +117,8 @@ export default function BackupModal({ onClose }) {
             </div>
           </div>
 
-          {/* Cloud backup — your Docker server */}
           <div className="bk-section">
-            <div className="bk-title">🐳 Docker backup server</div>
+            <div className="bk-title">&#128051; Docker backup server</div>
             <label className="field">
               <span>Server URL</span>
               <input
@@ -151,11 +160,28 @@ export default function BackupModal({ onClose }) {
               className={`toggle-row ${auto ? 'on' : ''}`}
               onClick={toggleAuto}
             >
-              <span>⚡ Auto-backup after each trade</span>
+              <span>&#9889; Auto-backup after each trade</span>
               <span className={`switch ${auto ? 'on' : ''}`}>
                 <i />
               </span>
             </button>
+          </div>
+
+          <div className="bk-section bk-danger">
+            <div className="bk-title">&#9888;&#65039; Danger zone</div>
+            {confirmClear ? (
+              <div className="bk-confirm">
+                <p>This deletes all trades permanently. Are you sure?</p>
+                <div className="bk-actions">
+                  <button className="btn danger" onClick={doClear}>Yes, delete everything</button>
+                  <button className="btn ghost" onClick={() => setConfirmClear(false)}>Cancel</button>
+                </div>
+              </div>
+            ) : (
+              <button className="btn danger full" onClick={() => setConfirmClear(true)}>
+                &#128465; Clear all trades
+              </button>
+            )}
           </div>
 
           {status && <div className={`bk-status ${status.kind}`}>{status.msg}</div>}
