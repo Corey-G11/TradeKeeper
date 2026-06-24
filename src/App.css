@@ -47,7 +47,7 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  padding: calc(134px + env(safe-area-inset-top, 0px)) 14px
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 14px
     calc(84px + env(safe-area-inset-bottom, 0px));
 }
 
