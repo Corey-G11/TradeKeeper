@@ -27,9 +27,8 @@ const scheduleAutoBackup = () => {
 // offline once installed to the home screen.
 store.subscribe(() => {
   const items = store.getState().trades.items;
+  if (items === lastItems) return;
+  lastItems = items;
   persistTrades(items);
-  if (items !== lastItems) {
-    lastItems = items;
-    scheduleAutoBackup();
-  }
+  scheduleAutoBackup();
 });

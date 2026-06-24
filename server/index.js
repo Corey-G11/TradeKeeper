@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import crypto from 'crypto';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -7,11 +8,11 @@ import { syncTrades, tradovateEnv } from './tradovate.js';
 
 const app = express();
 app.use(express.json({ limit: '5mb' }));
-app.use(
-  cors({
-    origin: process.env.ALLOW_ORIGIN || '*', // set to your app URL in prod
-  })
-);
+// Secure default: only allow cross-origin when ALLOW_ORIGIN is explicitly set
+// (render.yaml sets it to the app URL). An unset var blocks cross-origin reads
+// rather than allowing any site.
+const allowOrigin = process.env.ALLOW_ORIGIN;
+app.use(cors(allowOrigin ? { origin: allowOrigin } : { origin: false }));
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -25,22 +26,31 @@ const ensureDir = () => fs.mkdir(DATA_DIR, { recursive: true });
 const readJson = async (file, fallback) => {
   try {
     return JSON.parse(await fs.readFile(file, 'utf8'));
-  } catch {
-    return fallback;
+  } catch (err) {
+    if (err && err.code === 'ENOENT') return fallback;
+    throw err; // corrupt/partial file: surface instead of masking as empty
   }
 };
 const writeJson = async (file, data) => {
   await ensureDir();
-  await fs.writeFile(file, JSON.stringify(data, null, 2));
+  const tmp = `${file}.tmp`;
+  await fs.writeFile(tmp, JSON.stringify(data, null, 2));
+  await fs.rename(tmp, file); // atomic within DATA_DIR
 };
 
 // Optional shared secret. If BACKUP_TOKEN is set, backup routes require
 // `Authorization: Bearer <token>`.
+const safeEqual = (a, b) => {
+  const ba = Buffer.from(a);
+  const bb = Buffer.from(b);
+  return ba.length === bb.length && crypto.timingSafeEqual(ba, bb);
+};
+
 const requireToken = (req, res, next) => {
   const token = process.env.BACKUP_TOKEN;
   if (!token) return next();
   const got = (req.headers.authorization || '').replace(/^Bearer\s+/i, '');
-  if (got !== token) return res.status(401).json({ error: 'unauthorized' });
+  if (!safeEqual(got, token)) return res.status(401).json({ error: 'unauthorized' });
   return next();
 };
 
@@ -52,12 +62,16 @@ app.get('/health', (_req, res) =>
 
 // Fetch the latest backup of your journal + settings.
 app.get('/api/backup', requireToken, async (_req, res) => {
-  const data = await readJson(BACKUP_STORE, {
-    trades: [],
-    settings: {},
-    updatedAt: null,
-  });
-  res.json(data);
+  try {
+    const data = await readJson(BACKUP_STORE, {
+      trades: [],
+      settings: {},
+      updatedAt: null,
+    });
+    res.json(data);
+  } catch {
+    res.status(500).json({ error: 'store unreadable' });
+  }
 });
 
 // Save a backup. Body: { trades: [...], settings: {...} }
@@ -77,11 +91,15 @@ app.put('/api/backup', requireToken, async (req, res) => {
 
 /* ---- Tradovate auto-import (optional, from the scaffold) ---- */
 
-app.get('/api/trades', async (_req, res) => {
-  res.json(await readJson(TRADES_STORE, []));
+app.get('/api/trades', requireToken, async (_req, res) => {
+  try {
+    res.json(await readJson(TRADES_STORE, []));
+  } catch {
+    res.status(500).json({ error: 'store unreadable' });
+  }
 });
 
-app.post('/api/sync', async (_req, res) => {
+app.post('/api/sync', requireToken, async (_req, res) => {
   try {
     const imported = await syncTrades();
     const existing = await readJson(TRADES_STORE, []);

@@ -31,10 +31,12 @@ export const tradeStats = (trades) => {
   // Best / worst single trades by P&L.
   let best = null;
   let worst = null;
+  let bestP = -Infinity;
+  let worstP = Infinity;
   trades.forEach((t) => {
     const p = Number(t.pnl) || 0;
-    if (best == null || p > Number(best.pnl || 0)) best = t;
-    if (worst == null || p < Number(worst.pnl || 0)) worst = t;
+    if (best == null || p > bestP) { best = t; bestP = p; }
+    if (worst == null || p < worstP) { worst = t; worstP = p; }
   });
 
   return {

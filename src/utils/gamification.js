@@ -1,7 +1,7 @@
 // XP, levels, streaks and confidence calibration — the day-trader-friendly
 // motivation layer that sits on top of the raw journal.
 
-import { dayKey } from './format';
+import { dayKey, DAY_MS } from './format';
 
 // XP awarded for a single logged trade. Logging is rewarded; quality
 // (notes, a confidence read, sticking to the plan) is rewarded more.
@@ -59,7 +59,7 @@ export const currentStreak = (trades) => {
   let streak = 0;
   const cursor = new Date();
   const todayKey = dayKey(cursor.toISOString());
-  const yKey = dayKey(new Date(Date.now() - 86400000).toISOString());
+  const yKey = dayKey(new Date(Date.now() - DAY_MS).toISOString());
   if (!days.has(todayKey) && !days.has(yKey)) return 0;
   if (!days.has(todayKey)) cursor.setDate(cursor.getDate() - 1);
   // walk backwards while each day is present
@@ -82,7 +82,7 @@ export const longestStreak = (trades) => {
   for (let i = 1; i < keys.length; i += 1) {
     const prev = new Date(keys[i - 1]);
     const cur = new Date(keys[i]);
-    const diff = Math.round((cur - prev) / 86400000);
+    const diff = Math.round((cur - prev) / DAY_MS);
     if (diff === 1) {
       run += 1;
       best = Math.max(best, run);

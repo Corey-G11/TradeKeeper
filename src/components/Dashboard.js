@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import './Dashboard.css';
 import { selectTrades } from '../features/trades/tradesSlice';
@@ -25,14 +25,20 @@ const greeting = () => {
 
 export default function Dashboard({ onAdd, goTab, onBackup, onConnections }) {
   const trades = useSelector(selectTrades);
-  const stats = tradeStats(trades);
-  const xp = totalXp(trades);
-  const lvl = levelInfo(xp);
-  const streak = currentStreak(trades);
-  const longest = longestStreak(trades);
-  const conf = confidenceStats(trades);
-  const badges = computeBadges(trades, stats);
-  const curve = equityCurve(trades);
+  const { stats, xp, lvl, streak, longest, conf, badges, curve } = useMemo(() => {
+    const stats = tradeStats(trades);
+    const xp = totalXp(trades);
+    return {
+      stats,
+      xp,
+      lvl: levelInfo(xp),
+      streak: currentStreak(trades),
+      longest: longestStreak(trades),
+      conf: confidenceStats(trades),
+      badges: computeBadges(trades, stats),
+      curve: equityCurve(trades),
+    };
+  }, [trades]);
   const unlocked = badges.filter((b) => b.unlocked).length;
 
   // animated counters

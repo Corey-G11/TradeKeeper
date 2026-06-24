@@ -35,12 +35,19 @@ export const dayKey = (iso) => {
   return new Date(d.getTime() - off).toISOString().slice(0, 10);
 };
 
-// Risk:reward from entry / stop / target. Direction-aware.
-export const computeRR = ({ entry, stopLoss, profitTarget }) => {
+// Milliseconds in one day (streak / date math).
+export const DAY_MS = 86400000;
+
+// Risk:reward from entry / stop / target. Direction-aware: when `direction`
+// is 'long' or 'short', geometrically invalid setups return null. Trades
+// lacking `direction` keep the legacy magnitude-only behavior.
+export const computeRR = ({ entry, stopLoss, profitTarget, direction }) => {
   const e = Number(entry);
   const s = Number(stopLoss);
   const t = Number(profitTarget);
   if (![e, s, t].every((x) => Number.isFinite(x))) return null;
+  if (direction === 'long' && !(s < e && t > e)) return null;
+  if (direction === 'short' && !(s > e && t < e)) return null;
   const risk = Math.abs(e - s);
   const reward = Math.abs(t - e);
   if (risk === 0) return null;

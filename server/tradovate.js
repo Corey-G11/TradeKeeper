@@ -19,6 +19,13 @@ const POINT_VALUE = {
 
 let cache = { token: null, expires: 0 };
 
+// Abort an outbound fetch if the upstream stalls, so /api/sync can't hang.
+const withTimeout = (ms = 15000) => {
+  const c = new AbortController();
+  const id = setTimeout(() => c.abort(), ms);
+  return { signal: c.signal, done: () => clearTimeout(id) };
+};
+
 async function getToken() {
   if (cache.token && Date.now() < cache.expires - 60_000) return cache.token;
   const body = {
@@ -29,29 +36,41 @@ async function getToken() {
     cid: process.env.TRADOVATE_CID,
     sec: process.env.TRADOVATE_SEC,
   };
-  const res = await fetch(`${BASE}/auth/accessTokenRequest`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-  const data = await res.json();
-  if (!res.ok || !data.accessToken) {
-    throw new Error(`Tradovate auth failed: ${data.errorText || res.status}`);
+  const t = withTimeout();
+  try {
+    const res = await fetch(`${BASE}/auth/accessTokenRequest`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: t.signal,
+    });
+    const data = await res.json();
+    if (!res.ok || !data.accessToken) {
+      throw new Error(`Tradovate auth failed: ${data.errorText || res.status}`);
+    }
+    cache = {
+      token: data.accessToken,
+      expires: new Date(data.expirationTime).getTime() || Date.now() + 60 * 60_000,
+    };
+    return cache.token;
+  } finally {
+    t.done();
   }
-  cache = {
-    token: data.accessToken,
-    expires: new Date(data.expirationTime).getTime() || Date.now() + 60 * 60_000,
-  };
-  return cache.token;
 }
 
 async function apiGet(path) {
   const token = await getToken();
-  const res = await fetch(`${BASE}${path}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!res.ok) throw new Error(`GET ${path} -> ${res.status}`);
-  return res.json();
+  const t = withTimeout();
+  try {
+    const res = await fetch(`${BASE}${path}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: t.signal,
+    });
+    if (!res.ok) throw new Error(`GET ${path} -> ${res.status}`);
+    return res.json();
+  } finally {
+    t.done();
+  }
 }
 
 // Normalize a candle from various provider shapes into { t, o, h, l, c }.
@@ -78,17 +97,20 @@ export async function fetchCandles(symbol, fromIso, toIso) {
     .replace('{symbol}', encodeURIComponent(symbol))
     .replace('{from}', encodeURIComponent(fromIso))
     .replace('{to}', encodeURIComponent(toIso));
+  const t = withTimeout();
   try {
     const headers = process.env.CANDLES_TOKEN
       ? { Authorization: `Bearer ${process.env.CANDLES_TOKEN}` }
       : {};
-    const res = await fetch(url, { headers });
+    const res = await fetch(url, { headers, signal: t.signal });
     if (!res.ok) return [];
     const data = await res.json();
     const arr = Array.isArray(data) ? data : data.candles || data.bars || [];
     return arr.map(normalizeCandle).filter(Boolean).slice(-80);
   } catch {
     return [];
+  } finally {
+    t.done();
   }
 }
 
@@ -159,13 +181,21 @@ export async function syncTrades() {
   } catch {
     /* labelling is best-effort */
   }
-  const normalized = fills.map((f) => ({
-    contractId: f.contractId,
-    timestamp: f.timestamp,
-    action: f.action,
-    qty: f.qty,
-    price: f.price,
-  }));
+  const normalized = fills
+    .map((f) => ({
+      contractId: f.contractId,
+      timestamp: f.timestamp,
+      action: f.action,
+      qty: Number(f.qty),
+      price: Number(f.price),
+    }))
+    .filter(
+      (f) =>
+        Number.isFinite(f.qty) &&
+        f.qty > 0 &&
+        Number.isFinite(f.price) &&
+        f.timestamp
+    );
   const trades = reconstructTrades(normalized, contractsById);
 
   // Attach candles to the most recent trades (cap to keep sync fast).

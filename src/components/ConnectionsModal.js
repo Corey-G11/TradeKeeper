@@ -4,6 +4,7 @@ import './ConnectionsModal.css';
 import { loadSettings, saveSettings } from '../utils/settings';
 import { cloudSync } from '../utils/backup';
 import { mergeTrades } from '../features/trades/tradesSlice';
+import Sheet from './Sheet';
 
 export default function ConnectionsModal({ onClose }) {
   const dispatch = useDispatch();
@@ -42,16 +43,7 @@ export default function ConnectionsModal({ onClose }) {
   };
 
   return (
-    <div className="sheet-backdrop" onClick={onClose}>
-      <div className="sheet" onClick={(e) => e.stopPropagation()}>
-        <div className="sheet-handle" />
-        <div className="sheet-head">
-          <h2>🔗 Connections</h2>
-          <button className="x" onClick={onClose} aria-label="Close">
-            ✕
-          </button>
-        </div>
-
+    <Sheet title="🔗 Connections" onClose={onClose}>
         <div className="sheet-body">
           <div className="cx-card">
             <div className="cx-head">
@@ -98,7 +90,6 @@ export default function ConnectionsModal({ onClose }) {
             Tradovate credentials in its env vars.
           </p>
         </div>
-      </div>
-    </div>
+    </Sheet>
   );
 }

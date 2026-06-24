@@ -2,8 +2,7 @@
 // your Dockerized server.
 
 import { loadSettings, saveSettings } from './settings';
-
-const TRADES_KEY = 'tradekeeper:trades:v1';
+import { STORAGE_KEY as TRADES_KEY } from '../features/trades/tradesSlice';
 
 export const readTrades = () => {
   try {
