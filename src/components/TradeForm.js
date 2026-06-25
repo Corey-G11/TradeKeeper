@@ -6,6 +6,7 @@ import { computeRR, fmtNum } from '../utils/format';
 import { xpForTrade } from '../utils/gamification';
 import { COMMON_TAGS } from '../utils/settings';
 import TradeChart from './TradeChart';
+import Sheet from './Sheet';
 
 const blank = {
   market: 'futures',
@@ -103,17 +104,8 @@ export default function TradeForm({ trade, prefill, onClose }) {
   const tagOptions = [...new Set([...COMMON_TAGS, ...form.tags])];
 
   return (
-    <div className="sheet-backdrop" onClick={onClose}>
-      <div className="sheet" onClick={(e) => e.stopPropagation()}>
-        <div className="sheet-handle" />
-        <div className="sheet-head">
-          <h2>{isEdit ? 'Edit Trade' : 'Log Trade'}</h2>
-          <button className="x" onClick={onClose} aria-label="Close">
-            ✕
-          </button>
-        </div>
-
-        <form className="sheet-body" onSubmit={onSubmit}>
+    <Sheet title={isEdit ? 'Edit Trade' : 'Log Trade'} onClose={onClose}>
+      <form className="sheet-body" onSubmit={onSubmit}>
           {prefill && !isEdit && (
             <div className="prefill-note">🧮 Pre-filled from your calculator — add the result after the trade closes.</div>
           )}
@@ -383,8 +375,7 @@ export default function TradeForm({ trade, prefill, onClose }) {
               Delete Trade
             </button>
           )}
-        </form>
-      </div>
-    </div>
+      </form>
+    </Sheet>
   );
 }

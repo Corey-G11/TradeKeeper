@@ -10,6 +10,7 @@ import {
   readTrades,
 } from '../utils/backup';
 import { clearAllTrades, persistTrades } from '../features/trades/tradesSlice';
+import Sheet from './Sheet';
 
 export default function BackupModal({ onClose }) {
   const dispatch = useDispatch();
@@ -82,16 +83,7 @@ export default function BackupModal({ onClose }) {
   };
 
   return (
-    <div className="sheet-backdrop" onClick={onClose}>
-      <div className="sheet" onClick={(e) => e.stopPropagation()}>
-        <div className="sheet-handle" />
-        <div className="sheet-head">
-          <h2>&#9729;&#65038; Backup &amp; Restore</h2>
-          <button className="x" onClick={onClose} aria-label="Close">
-            &#10005;
-          </button>
-        </div>
-
+    <Sheet title="☁︎ Backup & Restore" onClose={onClose}>
         <div className="sheet-body">
           <div className="bk-note">
             You have <b>{tradeCount}</b> trade{tradeCount === 1 ? '' : 's'} stored
@@ -192,7 +184,6 @@ export default function BackupModal({ onClose }) {
             container over https. File export always works.
           </p>
         </div>
-      </div>
-    </div>
+    </Sheet>
   );
 }

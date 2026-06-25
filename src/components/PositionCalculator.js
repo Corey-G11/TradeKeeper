@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import './PositionCalculator.css';
 import { fmtMoney, fmtNum } from '../utils/format';
 import { loadSettings } from '../utils/settings';
+import Sheet from './Sheet';
 
 // $ per 1.00 point of price movement, per contract, for common futures.
 const FUTURES = {
@@ -134,17 +135,21 @@ export default function PositionCalculator({ onClose, onLogTrade }) {
     };
   }, [f]);
 
-  return (
-    <div className="sheet-backdrop" onClick={onClose}>
-      <div className="sheet calc-sheet" onClick={(e) => e.stopPropagation()}>
-        <div className="sheet-handle" />
-        <div className="sheet-head">
-          <h2>🧮 Position Calculator</h2>
-          <button className="x" onClick={onClose} aria-label="Close">
-            ✕
-          </button>
-        </div>
+  const rrField = (
+    <label className="field">
+      <span>Target R:R</span>
+      <input
+        type="number"
+        inputMode="decimal"
+        step="0.1"
+        value={f.rr}
+        onChange={set('rr')}
+      />
+    </label>
+  );
 
+  return (
+    <Sheet title="🧮 Position Calculator" className="calc-sheet" onClose={onClose}>
         <div className="sheet-body">
           <div className="seg">
             {['futures', 'forex'].map((m) => (
@@ -230,16 +235,7 @@ export default function PositionCalculator({ onClose, onLogTrade }) {
                   />
                 </label>
               ) : (
-                <label className="field">
-                  <span>Target R:R</span>
-                  <input
-                    type="number"
-                    inputMode="decimal"
-                    step="0.1"
-                    value={f.rr}
-                    onChange={set('rr')}
-                  />
-                </label>
+                rrField
               )}
             </div>
           ) : (
@@ -263,31 +259,11 @@ export default function PositionCalculator({ onClose, onLogTrade }) {
                   onChange={set('pipSize')}
                 />
               </label>
-              <label className="field">
-                <span>Target R:R</span>
-                <input
-                  type="number"
-                  inputMode="decimal"
-                  step="0.1"
-                  value={f.rr}
-                  onChange={set('rr')}
-                />
-              </label>
+              {rrField}
             </div>
           )}
 
-          {f.market === 'futures' && f.instrument === 'Custom' && (
-            <label className="field">
-              <span>Target R:R</span>
-              <input
-                type="number"
-                inputMode="decimal"
-                step="0.1"
-                value={f.rr}
-                onChange={set('rr')}
-              />
-            </label>
-          )}
+          {f.market === 'futures' && f.instrument === 'Custom' && rrField}
 
           <div className="calc-results">
             {!r.ready ? (
@@ -358,7 +334,7 @@ export default function PositionCalculator({ onClose, onLogTrade }) {
             {checklist.map((item, i) => (
               <button
                 type="button"
-                key={item}
+                key={`chk-${i}`}
                 className={`check-row ${checked[i] ? 'on' : ''}`}
                 onClick={() =>
                   setChecked((c) => c.map((v, j) => (j === i ? !v : v)))
@@ -393,7 +369,6 @@ export default function PositionCalculator({ onClose, onLogTrade }) {
             Always double-check tick/pip values for your broker.
           </p>
         </div>
-      </div>
-    </div>
+    </Sheet>
   );
 }
